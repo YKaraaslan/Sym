@@ -40,7 +40,7 @@ void GenerateSlidingMoves(int startSquare, int piece) {
       }
 
       moves.add(new Move(startSquare, targetSquare));
-
+      print(targetSquare);
       // Can't move any further in this direction after capturing opponent's piece
 
       if (Piece.IsColour(pieceOnTargetSquare, Board.opponentColour)) {
