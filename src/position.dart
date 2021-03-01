@@ -3,11 +3,11 @@ import 'piece.dart';
 import 'functions.dart';
 import 'board.dart';
 
-var Square;
+List<int> Square;
 final String startFEN = "rnbqkbnr/pppppppp/8/8/8/8/pppppppp/RNBQKBNR w KQkq - 0 1";
 
 void init(){
-  Square = Board.Square;
+  Square = new List<int>(64);
 
   //Square[0] = Piece.White | Piece.Bishop;
   loadPositionFromFen(startFEN);
