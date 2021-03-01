@@ -11,7 +11,7 @@ List<Move> GenerateMoves() {
 
   for (var startSquare = 0; startSquare < 64; startSquare++) {
     int piece = Board.Square[startSquare];
-    if (Piece.IsColour(piece, Board.ColorToMove)) {
+    if (Piece.IsColour(piece, Board.colorToMove)) {
       if (Piece.IsSlidingPiece(piece)) {
         GenerateSlidingMoves(startSquare, piece);
       }
@@ -35,7 +35,7 @@ void GenerateSlidingMoves(int startSquare, int piece) {
       int pieceOnTargetSquare = Board.Square[targetSquare];
 
       // Blocked by friendly piece, so can't move any further in this direction.
-      if (Piece.IsColour(pieceOnTargetSquare, friendlyColour)) {
+      if (Piece.IsColour(pieceOnTargetSquare, Board.friendlyColour)) {
         break;
       }
 
@@ -43,7 +43,7 @@ void GenerateSlidingMoves(int startSquare, int piece) {
 
       // Can't move any further in this direction after capturing opponent's piece
 
-      if (Piece.IsColour(pieceOnTargetSquare, opponentColour)) {
+      if (Piece.IsColour(pieceOnTargetSquare, Board.opponentColour)) {
         break;
       }
     }
