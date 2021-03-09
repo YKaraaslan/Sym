@@ -1,11 +1,11 @@
-int depth;
-bool useIterativeDeepening;
-bool useTranspositionTable;
+late int depth;
+late bool useIterativeDeepening;
+late bool useTranspositionTable;
 
-bool useThreading;
-bool useFixedDepthSearch;
-int searchTimeMillis = 1000;
-bool endlessSearchMode;
-bool clearTTEachMove;
-bool useBook;
-int maxBookPly = 10;
+late bool useThreading;
+late bool useFixedDepthSearch;
+late int searchTimeMillis = 1000;
+late bool endlessSearchMode;
+late bool clearTTEachMove;
+late bool useBook;
+late int maxBookPly = 10;

@@ -3,7 +3,7 @@ import 'piece.dart';
 import 'functions.dart';
 import 'board.dart';
 
-List<int> Square;
+var Square;
 final String startFEN =
     "rnbqkbnr/pppppppp/8/8/8/8/pppppppp/RNBQKBNR w KQkq - 0 1";
 
@@ -34,11 +34,11 @@ void loadPositionFromFen(String fen) {
       file = 0;
       rank--;
     } else if (isNumeric(character)) {
-      file += int.tryParse(character);
+      file += int.parse(character);
     } else {
       var pieceColour = isUpperCase(character) ? Piece.White : Piece.Black;
       var pieceType = pieceTypeFromSymbol[character.toLowerCase()];
-      Square[rank * 8 + file] = pieceType | pieceColour;
+      Square[rank * 8 + file] = pieceType! | pieceColour;
       file++;
     }
   }

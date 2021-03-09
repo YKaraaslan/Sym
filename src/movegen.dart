@@ -4,10 +4,10 @@ import 'board.dart';
 import 'piece.dart';
 import 'move.dart';
 
-List<Move> moves;
+var moves;
 
 List<Move> GenerateMoves() {
-  moves = new List<Move>();
+  moves = <Move>[];
 
   for (var startSquare = 0; startSquare < 64; startSquare++) {
     int piece = Board.Square[startSquare];
@@ -52,7 +52,7 @@ void GenerateSlidingMoves(int startSquare, int piece) {
 
 /*------------------------------*/
 List<int> DirectionOffsets = [8, -8, -1, 1, 7, -7, 9, -9];
-var NumSquaresToEdge = List.generate(8, (i) => List(8), growable: false);
+var NumSquaresToEdge = List.generate(8, (i) => [8], growable: false);
 
 PrecomputedMoveData() {
   for (var file = 0; file < 8; file++) {

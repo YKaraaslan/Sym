@@ -1,13 +1,13 @@
 import 'piece.dart';
 
 class Board {
-  static List<int> Square;
-  static int colorToMove;
-  static int friendlyColour;
-  static int opponentColour;
+  static late List<int> Square;
+  static late int colorToMove;
+  static late int friendlyColour;
+  static late int opponentColour;
 
   Board() {
-    Square = new List<int>(64);
+    Square = <int>[64];
     colorToMove = Piece.White;
     friendlyColour = Piece.White;
     opponentColour = Piece.Black;
