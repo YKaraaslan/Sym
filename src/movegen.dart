@@ -12,6 +12,7 @@ List<Move> GenerateMoves() {
   for (var startSquare = 0; startSquare < 64; startSquare++) {
     int piece = Board.Square[startSquare];
     if (Piece.IsColour(piece, Board.colorToMove)) {
+      print('inside');
       if (Piece.IsSlidingPiece(piece)) {
         GenerateSlidingMoves(startSquare, piece);
       }
