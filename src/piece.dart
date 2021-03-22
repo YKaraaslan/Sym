@@ -1,5 +1,7 @@
 import 'dart:core';
 
+import 'board.dart';
+
 class Piece {
   static final int None = 0;
   static final int King = 1;
@@ -39,5 +41,17 @@ class Piece {
 
   static bool IsSlidingPiece(int piece) {
     return (piece & 4) != 0;
+  }
+
+  static bool IsKnight(int piece) {
+    return Piece.Knight | Board.friendlyColour == piece;
+  }
+
+  static bool IsPawn(int piece) {
+    return Piece.Pawn | Board.friendlyColour == piece;
+  }
+
+  static bool IsKing(int piece) {
+    return Piece.King | Board.friendlyColour == piece;
   }
 }
