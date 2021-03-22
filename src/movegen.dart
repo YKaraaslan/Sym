@@ -12,9 +12,16 @@ List<Move> GenerateMoves() {
 
   for (var startSquare = 0; startSquare < 64; startSquare++) {
     int piece = Board.Square[startSquare];
-    if (piece != Piece.None && Piece.IsColour(piece, Board.colorToMove)) {
+    if (Piece.IsColour(piece, Board.colorToMove)) {
       if (Piece.IsSlidingPiece(piece)) {
         GenerateSlidingMoves(startSquare, piece);
+      }
+      else if (piece == Piece.PieceType(Piece.Knight)) {
+        GenerateKnightMoves(startSquare);
+      } else if (piece == Piece.PieceType(Piece.Pawn)) {
+        GeneratePawnMoves(startSquare);
+      } else if (piece == Piece.PieceType(Piece.King)) {
+        GenerateKingMoves(startSquare);
       }
     }
   }
@@ -40,7 +47,7 @@ void GenerateSlidingMoves(int startSquare, int piece) {
       }
 
       moves.add(new Move(startSquare, targetSquare));
-      print(moveName(startSquare, targetSquare));
+      //print(moveName(startSquare, targetSquare));
       // Can't move any further in this direction after capturing opponent's piece
 
       if (Piece.IsColour(pieceOnTargetSquare, Board.opponentColour)) {
@@ -53,6 +60,9 @@ void GenerateSlidingMoves(int startSquare, int piece) {
 /*------------------------------*/
 List<int> DirectionOffsets = [8, -8, -1, 1, 7, -7, 9, -9];
 var NumSquaresToEdge = new List.generate(64, (_) => new List.filled(64, 0));
+var knightMoves = new List.generate(64, (_) => new List.filled(64, 0));
+var allKnightJumps = {15, 17, -17, -15, 10, -6, 6, -10};
+
 PrecomputedMoveData() {
   for (var file = 0; file < 8; file++) {
     for (var rank = 0; rank < 8; rank++) {
@@ -73,6 +83,30 @@ PrecomputedMoveData() {
         min(numNorth, numEast),
         min(numSouth, numWest),
       ];
+
+
+
+
+
+
+      /*var legalKnightJumps = new List.filled(64, 0);
+      var knightBitboard = 0;
+
+      for (var knightJumpDelta in allKnightJumps) {
+        int knightJumpSquare = squareIndex + knightJumpDelta;
+        if (knightJumpSquare >= 0 && knightJumpSquare < 64) {
+          double knightSquareY = knightJumpSquare / 8;
+          double knightSquareX = knightJumpSquare - knightSquareY * 8;
+          // Ensure knight has moved max of 2 squares on x/y axis (to reject indices that have wrapped around side of board)
+          int maxCoordMoveDst =
+              max((x - knightSquareX).abs(), (y - knightSquareY).abs());
+          if (maxCoordMoveDst == 2) {
+            legalKnightJumps.add(knightJumpSquare);
+          }
+        }
+      }
+
+      knightMoves[squareIndex] = legalKnightJumps.toList();*/
     }
   }
 }
@@ -120,3 +154,11 @@ String moveName(startSquare, targetSquare) {
 
   return res;
 }
+
+void GenerateKingMoves(int startSquare) {}
+
+void GeneratePawnMoves(int startSquare) {}
+
+/*---------------------------------*/
+
+void GenerateKnightMoves(startSquare) {}
