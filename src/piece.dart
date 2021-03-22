@@ -1,6 +1,6 @@
 import 'dart:core';
 
-class Piece { 
+class Piece {
   static final int None = 0;
   static final int King = 1;
   static final int Pawn = 2;
@@ -12,32 +12,32 @@ class Piece {
   static final int White = 8;
   static final int Black = 16;
 
-  static const int typeMask = 0x00111;
-  static const int blackMask = 0x10000;
-  static const int whiteMask = 0x01000;
+  static const int typeMask = 7;
+  static const int blackMask = 16;
+  static const int whiteMask = 8;
   static const int colourMask = whiteMask | blackMask;
 
-    static bool IsColour (int piece, int colour) {
+  static bool IsColour(int piece, int colour) {
     return (piece & colourMask) == colour;
   }
 
-    static int Colour (int piece) {
+  static int Colour(int piece) {
     return piece & colourMask;
   }
 
-    static int PieceType (int piece) {
+  static int PieceType(int piece) {
     return piece & typeMask;
   }
 
-    static bool IsRookOrQueen (int piece) {
-    return (piece & 0x110) == 0x110;
+  static bool IsRookOrQueen(int piece) {
+    return (piece & 6) == 6;
   }
 
-    static bool IsBishopOrQueen (int piece) {
-    return (piece & 0x101) == 0x101;
+  static bool IsBishopOrQueen(int piece) {
+    return (piece & 5) == 5;
   }
 
-    static bool IsSlidingPiece (int piece) {
-    return (piece & 0x100) != 0;
+  static bool IsSlidingPiece(int piece) {
+    return (piece & 4) != 0;
   }
 }

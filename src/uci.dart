@@ -41,7 +41,7 @@ void loop() {
       var splitMsg = msg.split(' ');
       var fen = splitMsg.skip(2).take(splitMsg.length - 2).join(' ');
       loadPositionFromFen(fen);
-      print(GenerateMoves());
+      GenerateMoves();
     }
 
     if (msg.startsWith('go')) {
@@ -51,3 +51,8 @@ void loop() {
     sleep(Duration(milliseconds: 1000));
   }
 }
+
+
+// position fen rnbqkbnr/pp1ppppp/8/2p5/4P3/5N2/PPPP1PPP/RNBQKB1R b KQkq - 1 2
+
+// position fen r1bq1rk1/ppp3pp/5n2/3Pp3/1bB5/2N2N2/PP3PPP/R2Q1RK1 w - - 5 12
