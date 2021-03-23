@@ -1,4 +1,5 @@
 import 'board.dart';
+import 'functions.dart';
 import 'piece.dart';
 import 'move.dart';
 import 'precomputed_movedata.dart';
@@ -39,8 +40,8 @@ void GenerateSlidingMoves(int startSquare, int piece) {
       int targetSquare =
           (startSquare + directionOffsets[directionIndex] * (n + 1)).round();
 
-        if (!targetSquare.isNegative) {
-          int pieceOnTargetSquare = Board.Square[targetSquare];
+      if (!targetSquare.isNegative) {
+        int pieceOnTargetSquare = Board.Square[targetSquare];
 
         // Blocked by friendly piece, so can't move any further in this direction.
         if (Piece.IsColour(pieceOnTargetSquare, Board.friendlyColour)) {
@@ -61,9 +62,22 @@ void GenerateSlidingMoves(int startSquare, int piece) {
 
 /*------------------------------*/
 
-void GenerateKingMoves(int startSquare) {}
+void GenerateKingMoves(int startSquare) {
+  for (int kingMoveIndex = 0;
+      kingMoveIndex < kingMoves[startSquare].length;
+      kingMoveIndex++) {
+    int targetSquare = kingMoves[startSquare][kingMoveIndex];
+    int pieceOnTargetSquare = Board.Square[targetSquare];
 
-void GeneratePawnMoves(int startSquare) {}
+    if (Piece.IsColour(pieceOnTargetSquare, Board.friendlyColour)) {
+      continue;
+    }
+
+    //bool isCapture = Piece.IsColour (pieceOnTargetSquare, Board.opponentColour);
+
+    moves.add(new Move(startSquare, targetSquare));
+  }
+}
 
 /*---------------------------------*/
 
@@ -79,10 +93,32 @@ void GenerateKnightMoves(startSquare) {
     }*/
 
     // Skip if square contains friendly piece, or if in check and knight is not interposing/capturing checking piece
-      if (Piece.IsColour(targetSquarePiece, Board.friendlyColour)) {
-        continue;
+    if (Piece.IsColour(targetSquarePiece, Board.friendlyColour)) {
+      continue;
+    }
+    moves.add(new Move(startSquare, targetSquare));
+  }
+}
+
+/*---------------------------------*/
+
+void GeneratePawnMoves(startSquare) {
+  int pawnOffset = (Board.friendlyColour == Piece.White) ? 8 : -8;
+  int startRank = (Board.WhiteToMove) ? 1 : 6;
+  //int finalRankBeforePromotion = (Board.WhiteToMove) ? 6 : 1;
+
+  int rank = RankIndex(startSquare);
+
+  int squareOneForward = startSquare + pawnOffset;
+  if (Board.Square[squareOneForward] == Piece.None) {
+    moves.add(new Move(startSquare, squareOneForward));
+    print(startSquare.toString() + " - " + squareOneForward.toString());
+    if (rank == startRank) {
+      int squareTwoForward = squareOneForward + pawnOffset;
+      if (Board.Square[squareTwoForward] == Piece.None) {
+        moves.add(new Move(startSquare, squareTwoForward));
+        print(startSquare.toString() + " - " + squareTwoForward.toString());
       }
-      moves.add(new Move(startSquare, targetSquare));
-      print(moveName(startSquare, targetSquare));
+    }
   }
 }
