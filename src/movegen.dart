@@ -38,19 +38,22 @@ void GenerateSlidingMoves(int startSquare, int piece) {
     for (var n = 0; n < numSquaresToEdge[startSquare][directionIndex]; n++) {
       int targetSquare =
           (startSquare + directionOffsets[directionIndex] * (n + 1)).round();
-      int pieceOnTargetSquare = Board.Square[targetSquare];
 
-      // Blocked by friendly piece, so can't move any further in this direction.
-      if (Piece.IsColour(pieceOnTargetSquare, Board.friendlyColour)) {
-        break;
-      }
+        if (!targetSquare.isNegative) {
+          int pieceOnTargetSquare = Board.Square[targetSquare];
 
-      moves.add(new Move(startSquare, targetSquare));
-      //print(moveName(startSquare, targetSquare));
-      // Can't move any further in this direction after capturing opponent's piece
+        // Blocked by friendly piece, so can't move any further in this direction.
+        if (Piece.IsColour(pieceOnTargetSquare, Board.friendlyColour)) {
+          break;
+        }
 
-      if (Piece.IsColour(pieceOnTargetSquare, Board.opponentColour)) {
-        break;
+        moves.add(new Move(startSquare, targetSquare));
+        //print(moveName(startSquare, targetSquare));
+        // Can't move any further in this direction after capturing opponent's piece
+
+        if (Piece.IsColour(pieceOnTargetSquare, Board.opponentColour)) {
+          break;
+        }
       }
     }
   }
@@ -70,15 +73,16 @@ void GenerateKnightMoves(startSquare) {
       knightMoveIndex++) {
     int targetSquare = knightMoves[startSquare][knightMoveIndex];
     int targetSquarePiece = Board.Square[targetSquare];
-    bool isCapture = Piece.IsColour(targetSquarePiece, Board.opponentColour);
-
+    /*bool isCapture = Piece.IsColour(targetSquarePiece, Board.opponentColour);
     if (isCapture) {
-      // Skip if square contains friendly piece, or if in check and knight is not interposing/capturing checking piece
+      
+    }*/
+
+    // Skip if square contains friendly piece, or if in check and knight is not interposing/capturing checking piece
       if (Piece.IsColour(targetSquarePiece, Board.friendlyColour)) {
         continue;
       }
       moves.add(new Move(startSquare, targetSquare));
       print(moveName(startSquare, targetSquare));
-    }
   }
 }
