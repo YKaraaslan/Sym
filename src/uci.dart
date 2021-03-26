@@ -3,6 +3,7 @@ import 'dart:io';
 import 'board.dart';
 import 'movegen.dart';
 import 'position.dart';
+import 'precomputed_movedata.dart';
 
 void loop() {
   while (true) {
@@ -41,6 +42,7 @@ void loop() {
       var splitMsg = msg.split(' ');
       var fen = splitMsg.skip(2).take(splitMsg.length - 2).join(' ');
       loadPositionFromFen(fen);
+      PrecomputedMoveData();
       GenerateMoves();
     }
 
@@ -55,7 +57,8 @@ void loop() {
     // Delete this
 
     if (msg.contains('ok')) {
-      loadPositionFromFen(Board.startFEN);
+      loadPositionFromFen(
+          '2bnk1n1/ppppqppp/8/8/2r1K3/8/PPP2PPP/RNB2B1R w - - 0 1');
       GenerateMoves();
     }
   }

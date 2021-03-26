@@ -1,37 +1,35 @@
 import 'board.dart';
-import 'functions.dart';
-import 'opponent_moves.dart';
 import 'piece.dart';
 import 'move.dart';
 import 'precomputed_movedata.dart';
 
-var moves;
 var directionOffsets = [8, -8, -1, 1, 7, -7, 9, -9];
+var attackedSquares = <int>[];
 
-List<Move> GenerateMoves() {
-  moves = <Move>[];
-
-  print(getAttackedSquares());
-
-  /*for (var startSquare = 0; startSquare < 64; startSquare++) {
+List getAttackedSquares() {
+  for (var startSquare = 0; startSquare < 64; startSquare++) {
     int piece = Board.Square[startSquare];
-    if (Piece.IsColour(piece, Board.colorToMove)) {
+    if (Piece.IsColour(piece, Board.opponentColour)) {
       if (Piece.IsSlidingPiece(piece)) {
-        GenerateSlidingMoves(startSquare, piece);
+        print('IsSlidingPiece');
+        GenerateSlidingMovesForOpponent(startSquare, piece);
       } else if (Piece.IsKnight(piece)) {
-        GenerateKnightMoves(startSquare);
+        print('IsKnight');
+        GenerateKnightMovesForOpponent(startSquare);
       } else if (Piece.IsPawn(piece)) {
-        GeneratePawnMoves(startSquare);
+        print('IsPawn');
+        GeneratePawnMovesForOpponent(startSquare);
       } else if (Piece.IsKing(piece)) {
-        GenerateKingMoves(startSquare);
+        print('IsKing');
+        GenerateKingMovesForOpponent(startSquare);
       }
     }
-  }*/
-  return moves;
+  }
+  return attackedSquares;
 }
 
 // rook, bishop, queen
-void GenerateSlidingMoves(int startSquare, int piece) {
+void GenerateSlidingMovesForOpponent(int startSquare, int piece) {
   int startDirIndex = Piece.PieceType(piece) == Piece.Bishop ? 4 : 0;
   int endDirIndex = Piece.PieceType(piece) == Piece.Rook ? 4 : 8;
 
@@ -46,15 +44,16 @@ void GenerateSlidingMoves(int startSquare, int piece) {
         int pieceOnTargetSquare = Board.Square[targetSquare];
 
         // Blocked by friendly piece, so can't move any further in this direction.
-        if (Piece.IsColour(pieceOnTargetSquare, Board.friendlyColour)) {
+        if (Piece.IsColour(pieceOnTargetSquare, Board.opponentColour)) {
           break;
         }
 
-        moves.add(new Move(startSquare, targetSquare));
-        print(moveName(startSquare, targetSquare));
+        if (!attackedSquares.contains(targetSquare)) {
+          attackedSquares.add(targetSquare);
+        }
         // Can't move any further in this direction after capturing opponent's piece
 
-        if (Piece.IsColour(pieceOnTargetSquare, Board.opponentColour)) {
+        if (Piece.IsColour(pieceOnTargetSquare, Board.friendlyColour)) {
           break;
         }
       }
@@ -64,65 +63,52 @@ void GenerateSlidingMoves(int startSquare, int piece) {
 
 /*------------------------------*/
 
-void GenerateKingMoves(int startSquare) {
+void GenerateKingMovesForOpponent(int startSquare) {
   for (int kingMoveIndex = 0;
       kingMoveIndex < kingMoves[startSquare].length;
       kingMoveIndex++) {
     int targetSquare = kingMoves[startSquare][kingMoveIndex];
     int pieceOnTargetSquare = Board.Square[targetSquare];
 
-    if (Piece.IsColour(pieceOnTargetSquare, Board.friendlyColour)) {
+    if (Piece.IsColour(pieceOnTargetSquare, Board.opponentColour)) {
       continue;
     }
 
-    //bool isCapture = Piece.IsColour (pieceOnTargetSquare, Board.opponentColour);
+    //bool isCapture = Piece.IsColour (pieceOnTargetSquare, Board.friendlyColour);
 
-    moves.add(new Move(startSquare, targetSquare));
+    if (!attackedSquares.contains(targetSquare)) {
+      attackedSquares.add(targetSquare);
+    }
+
     print(moveName(startSquare, targetSquare));
   }
 }
 
 /*---------------------------------*/
 
-void GenerateKnightMoves(startSquare) {
+void GenerateKnightMovesForOpponent(startSquare) {
   for (int knightMoveIndex = 0;
       knightMoveIndex < knightMoves[startSquare].length;
       knightMoveIndex++) {
     int targetSquare = knightMoves[startSquare][knightMoveIndex];
     int targetSquarePiece = Board.Square[targetSquare];
-    /*bool isCapture = Piece.IsColour(targetSquarePiece, Board.opponentColour);
+    /*bool isCapture = Piece.IsColour(targetSquarePiece, Board.friendlyColour);
     if (isCapture) {
       
     }*/
 
     // Skip if square contains friendly piece, or if in check and knight is not interposing/capturing checking piece
-    if (Piece.IsColour(targetSquarePiece, Board.friendlyColour)) {
+    if (Piece.IsColour(targetSquarePiece, Board.opponentColour)) {
       continue;
     }
-    moves.add(new Move(startSquare, targetSquare));
+
+    if (!attackedSquares.contains(targetSquare)) {
+      attackedSquares.add(targetSquare);
+    }
     print(moveName(startSquare, targetSquare));
   }
 }
 
 /*---------------------------------*/
 
-void GeneratePawnMoves(startSquare) {
-  int pawnOffset = (Board.friendlyColour == Piece.White) ? 8 : -8;
-  int startRank = (Board.WhiteToMove) ? 1 : 6;
-  //int finalRankBeforePromotion = (Board.WhiteToMove) ? 6 : 1;
-
-  int rank = RankIndex(startSquare);
-
-  int squareOneForward = startSquare + pawnOffset;
-  if (Board.Square[squareOneForward] == Piece.None) {
-    moves.add(new Move(startSquare, squareOneForward));
-    print(moveName(startSquare, squareOneForward));
-    if (rank == startRank) {
-      int squareTwoForward = squareOneForward + pawnOffset;
-      if (Board.Square[squareTwoForward] == Piece.None) {
-        moves.add(new Move(startSquare, squareTwoForward));
-        print(moveName(startSquare, squareTwoForward));
-      }
-    }
-  }
-}
+void GeneratePawnMovesForOpponent(startSquare) {}
