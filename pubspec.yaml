@@ -1,0 +1,17 @@
+name: sym
+description: Chess Bot
+version: 1.0.0
+project_author: Yunus Karaaslan
+project_author_email: karaaslan.21@hotmail.com
+project_author_phone: '+905319823347'
+
+environment:
+  sdk: '>=2.16.2 <3.0.0'
+
+
+dependencies:
+
+
+dev_dependencies:
+  lints: ^1.0.1
+  test: ^1.16.0

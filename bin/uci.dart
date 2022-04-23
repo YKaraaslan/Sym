@@ -51,6 +51,7 @@ void loop() {
     }
 
     sleep(Duration(milliseconds: 1000));
+      print('find best move');
 
 
 
