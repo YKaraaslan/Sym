@@ -1,3 +1,5 @@
+import 'package:sym/functions.dart';
+
 import 'board.dart';
 import 'piece.dart';
 import 'precomputed_move_data.dart';
@@ -9,23 +11,17 @@ List getAttackedSquares() {
   for (var startSquare = 0; startSquare < 64; startSquare++) {
     int piece = Board.square[startSquare];
     if (Piece.isColour(piece, Board.opponentColour)) {
-      // print(Piece.pieceName(piece));
       if (Piece.isSlidingPiece(piece)) {
         generateSlidingMovesForOpponent(startSquare, piece);
       } else if (Piece.isKnight(piece)) {
         generateKnightMovesForOpponent(startSquare);
       } else if (Piece.isPawn(piece)) {
-        if (Piece.isColour(piece, Piece.black)) {
-          generateBlackPawnMovesForOpponent(startSquare);
-        } else {
-          generateWhitePawnMovesForOpponent(startSquare);
-        }
+        generatePawnMoves(startSquare);
       } else if (Piece.isKing(piece)) {
         generateKingMovesForOpponent(startSquare);
       }
     }
   }
-  print(attackedSquares);
   return attackedSquares;
 }
 
@@ -124,19 +120,21 @@ void generateBlackPawnMovesForOpponent(startSquare) {
 
 /*---------------------------------*/
 
-void generateWhitePawnMovesForOpponent(startSquare) {
-  for (int whitePawnMoveIndex = 0; whitePawnMoveIndex < pawnAttacksWhite[startSquare].length; whitePawnMoveIndex++) {
-    int targetSquare = pawnAttacksWhite[startSquare][whitePawnMoveIndex];
-    int targetSquarePiece = Board.square[targetSquare];
+void generatePawnMoves(startSquare) {
+  int pawnOffset = (Board.friendlyColour == Piece.white) ? 8 : -8;
+  int startRank = (Board.whiteToMove) ? 1 : 6;
+  // int finalRankBeforePromotion = (Board.whiteToMove) ? 6 : 1;
 
-    // Skip if square contains friendly piece, or if in check and knight is not interposing/capturing checking piece
-    if (Piece.isColour(targetSquarePiece, Board.opponentColour)) {
-      continue;
-    }
+  int rank = rankIndex(startSquare);
 
-    if (!attackedSquares.contains(targetSquare)) {
-      attackedSquares.add(targetSquare);
+  int squareOneForward = startSquare + pawnOffset;
+  if (Board.square[squareOneForward] == Piece.none) {
+    attackedSquares.add(squareOneForward);
+    if (rank == startRank) {
+      int squareTwoForward = squareOneForward + pawnOffset;
+      if (Board.square[squareTwoForward] == Piece.none) {
+        attackedSquares.add(squareTwoForward);
+      }
     }
-    // print(moveName(startSquare, targetSquare));
   }
 }
