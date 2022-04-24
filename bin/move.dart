@@ -1,10 +1,8 @@
 class Move {
-  int StartSquare;
-  int TargetSquare;
+  int startSquare;
+  int targetSquare;
 
-  Move(int StartSquare, int TargetSquare)
-      : this.StartSquare = StartSquare,
-        this.TargetSquare = TargetSquare;
+  Move(this.startSquare, this.targetSquare);
 }
 
 String moveName(startSquare, targetSquare) {
