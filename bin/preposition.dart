@@ -7,7 +7,7 @@ import 'board.dart';
 class Preposition {
 
   void init() {
-    loadPositionFromFen(Board.startFEN);
+    loadPositionFromFen(Board.laterFEN);
     print("Position set");
   }
 

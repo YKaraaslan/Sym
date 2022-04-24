@@ -6,12 +6,16 @@ var kingMoves = List.generate(64, (_) => List.filled(64, 0));
 var rookMoves = List.generate(64, (_) => List.filled(64, 0));
 var bishopMoves = List.generate(64, (_) => List.filled(64, 0));
 var queenMoves = List.generate(64, (_) => List.filled(64, 0));
+var whitePawnMoves = List.generate(64, (_) => List.filled(64, 0));
+var blackPawnMoves = List.generate(64, (_) => List.filled(64, 0));
 var pawnAttacksWhite = List.generate(64, (_) => List.filled(64, 0));
 var pawnAttacksBlack = List.generate(64, (_) => List.filled(64, 0));
 var allKnightJumps = {15, 17, -17, -15, 10, -6, 6, -10};
 var kingQueenDirectionOffsets = {8, -8, -1, 1, 9, -9, 7, -7};
 var rookDirectionOffsets = {8, -8, -1, 1};
 var bishopDirectionOffsets = {9, -9, 7, -7};
+var whitePawnDirectionOffsets = {8};
+var blackPawnDirectionOffsets = {-8};
 
 precomputedMoveData() {
   for (int squareIndex = 0; squareIndex < 64; squareIndex++) {
@@ -172,5 +176,36 @@ precomputedMoveData() {
     }
 
     queenMoves[squareIndex] = legalQueenMoves;
+
+    // White Pawn Moves
+    var legalWhitePawnMoves = <int>[];
+
+    if (y < 7) {
+      for (var whitePawnMoveDelta in whitePawnDirectionOffsets) {
+        int whitePawnMoveSquare = squareIndex + whitePawnMoveDelta;
+        legalWhitePawnMoves.add(whitePawnMoveSquare);
+        if (whitePawnMoveSquare ~/ 8 == 1) {
+          legalWhitePawnMoves.add(whitePawnMoveSquare + whitePawnMoveDelta);
+        }
+      }
+    }
+
+    whitePawnMoves[squareIndex] = legalWhitePawnMoves;
+
+
+    // Black Pawn Moves
+    var legalBlackPawnMoves = <int>[];
+
+    if (y > 0) {
+      for (var blackPawnMoveDelta in blackPawnDirectionOffsets) {
+        int blackPawnMoveSquare = squareIndex + blackPawnMoveDelta;
+        legalBlackPawnMoves.add(blackPawnMoveSquare);
+        if (blackPawnMoveSquare ~/ 8 == 6) {
+          legalBlackPawnMoves.add(blackPawnMoveSquare + blackPawnMoveDelta);
+        }
+      }
+    }
+
+    blackPawnMoves[squareIndex] = legalBlackPawnMoves;
   }
 }

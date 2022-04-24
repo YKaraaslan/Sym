@@ -1,5 +1,4 @@
 import 'board.dart';
-import 'move.dart';
 import 'piece.dart';
 import 'precomputed_move_data.dart';
 
@@ -16,12 +15,17 @@ List getAttackedSquares() {
       } else if (Piece.isKnight(piece)) {
         generateKnightMovesForOpponent(startSquare);
       } else if (Piece.isPawn(piece)) {
-        generatePawnMovesForOpponent(startSquare);
+        if (Piece.isColour(piece, Piece.black)) {
+          generateBlackPawnMovesForOpponent(startSquare);
+        } else {
+          generateWhitePawnMovesForOpponent(startSquare);
+        }
       } else if (Piece.isKing(piece)) {
         generateKingMovesForOpponent(startSquare);
       }
     }
   }
+  print(attackedSquares);
   return attackedSquares;
 }
 
@@ -72,7 +76,7 @@ void generateKingMovesForOpponent(int startSquare) {
       attackedSquares.add(targetSquare);
     }
 
-    print(moveName(startSquare, targetSquare));
+    // print(moveName(startSquare, targetSquare));
   }
 }
 
@@ -95,10 +99,44 @@ void generateKnightMovesForOpponent(startSquare) {
     if (!attackedSquares.contains(targetSquare)) {
       attackedSquares.add(targetSquare);
     }
-    print(moveName(startSquare, targetSquare));
+    // print(moveName(startSquare, targetSquare));
   }
 }
 
 /*---------------------------------*/
 
-void generatePawnMovesForOpponent(startSquare) {}
+void generateBlackPawnMovesForOpponent(startSquare) {
+  for (int blackPawnMoveIndex = 0; blackPawnMoveIndex < pawnAttacksBlack[startSquare].length; blackPawnMoveIndex++) {
+    int targetSquare = pawnAttacksBlack[startSquare][blackPawnMoveIndex];
+    int targetSquarePiece = Board.square[targetSquare];
+
+    // Skip if square contains friendly piece, or if in check and knight is not interposing/capturing checking piece
+    if (Piece.isColour(targetSquarePiece, Board.opponentColour)) {
+      continue;
+    }
+
+    if (!attackedSquares.contains(targetSquare)) {
+      attackedSquares.add(targetSquare);
+    }
+    // print(moveName(startSquare, targetSquare));
+  }
+}
+
+/*---------------------------------*/
+
+void generateWhitePawnMovesForOpponent(startSquare) {
+  for (int whitePawnMoveIndex = 0; whitePawnMoveIndex < pawnAttacksWhite[startSquare].length; whitePawnMoveIndex++) {
+    int targetSquare = pawnAttacksWhite[startSquare][whitePawnMoveIndex];
+    int targetSquarePiece = Board.square[targetSquare];
+
+    // Skip if square contains friendly piece, or if in check and knight is not interposing/capturing checking piece
+    if (Piece.isColour(targetSquarePiece, Board.opponentColour)) {
+      continue;
+    }
+
+    if (!attackedSquares.contains(targetSquare)) {
+      attackedSquares.add(targetSquare);
+    }
+    // print(moveName(startSquare, targetSquare));
+  }
+}
