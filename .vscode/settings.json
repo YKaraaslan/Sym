@@ -1,0 +1,53 @@
+{
+  "[dart]": {
+    "editor.formatOnSave": true,
+    "editor.formatOnType": true,
+    "editor.rulers": [
+      150
+    ],
+    "editor.selectionHighlight": false,
+    "editor.suggest.snippetsPreventQuickSuggestions": false,
+    "editor.suggestSelection": "first",
+    "editor.tabCompletion": "onlySnippets",
+    "editor.wordBasedSuggestions": false,
+    "editor.defaultFormatter": "Dart-Code.dart-code"
+  },
+  "dart.debugExternalPackageLibraries": false,
+  "dart.debugSdkLibraries": false,
+  "emulator.emulatorPath": "C:\\Users\\karaa\\AppData\\Local\\Android\\Sdk\\emulator",
+  "workbench.iconTheme": "material-icon-theme",
+  "editor.unicodeHighlight.allowedLocales": {
+    "tr": true
+  },
+  "editor.formatOnType": true,
+  "editor.accessibilitySupport": "off",
+  "tabnine.experimentalAutoImports": true,
+  "editor.formatOnPaste": true,
+  "editor.formatOnSave": true,
+  "editor.defaultFormatter": "Dart-Code.dart-code",
+  "dart.showInspectorNotificationsForWidgetErrors": false,
+  "bracket-pair-colorizer-2.depreciation-notice": false,
+  "dart.previewHotReloadOnSaveWatcher": true,
+  "editor.formatOnSaveMode": "modificationsIfAvailable",
+  "workbench.settings.useSplitJSON": true,
+  "json.schemas": [],
+  "settingsSync.ignoredExtensions": [],
+  "jupyter.jupyterCommandLineArguments": [],
+  "settingsSync.ignoredSettings": [],
+  "liveServer.settings.donotVerifyTags": true,
+  "liveServer.settings.donotShowInfoMsg": true,
+  "githubPullRequests.fileListLayout": "flat",
+  "githubPullRequests.pullBranch": "never",
+  "git.ignoreRebaseWarning": true,
+  "todo-tree.general.tagGroups": {
+  
+  },
+  "diffEditor.ignoreTrimWhitespace": false,
+  "workbench.startupEditor": "none",
+  "git.enableSmartCommit": true,
+  "diffEditor.codeLens": true,
+  "[python]": {
+  },
+  "git.confirmSync": false,
+  "editor.minimap.enabled": false
+}

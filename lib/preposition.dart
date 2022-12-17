@@ -2,7 +2,7 @@ import 'dart:core';
 
 import 'board.dart';
 import 'piece.dart';
-import 'src/utils.dart';
+import 'src/extensions.dart';
 
 void loadPositionFromFen(String fen) {
   var pieceTypeFromSymbol = {
@@ -20,10 +20,10 @@ void loadPositionFromFen(String fen) {
     if (character == '/') {
       file = 0;
       rank--;
-    } else if (isNumeric(character)) {
+    } else if (character.isNumeric()) {
       file += int.parse(character);
     } else {
-      var pieceColour = isUpperCase(character) ? Piece.white : Piece.black;
+      var pieceColour = character.isUpperCase() ? Piece.white : Piece.black;
       var pieceType = pieceTypeFromSymbol[character.toLowerCase()];
       Board.square[rank * 8 + file] = pieceType! | pieceColour;
       file++;

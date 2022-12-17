@@ -46,8 +46,7 @@ void precomputedMoveData() {
         int knightSquareX = knightJumpSquare - knightSquareY * 8;
 
         // Ensure knight has moved max of 2 squares on x/y axis (to reject indices that have wrapped around side of board)
-        int maxCoordMoveDst =
-            max((x - knightSquareX).abs(), (y - knightSquareY).abs());
+        int maxCoordMoveDst = max((x - knightSquareX).abs(), (y - knightSquareY).abs());
 
         if (maxCoordMoveDst == 2) {
           legalKnightJumps.add(knightJumpSquare);
@@ -66,8 +65,7 @@ void precomputedMoveData() {
         int kingSquareY = kingMoveSquare ~/ 8;
         int kingSquareX = kingMoveSquare - kingSquareY * 8;
         // Ensure king has moved max of 1 square on x/y axis (to reject indices that have wrapped around side of board)
-        int maxCoordMoveDst =
-            max((x - kingSquareX).abs(), (y - kingSquareY).abs());
+        int maxCoordMoveDst = max((x - kingSquareX).abs(), (y - kingSquareY).abs());
         if (maxCoordMoveDst == 1) {
           legalKingMoves.add(kingMoveSquare);
         }
@@ -104,8 +102,7 @@ void precomputedMoveData() {
     for (var rookMoveDelta in rookDirectionOffsets) {
       int rookMoveSquare = squareIndex + rookMoveDelta;
       while (rookMoveSquare >= 0 && rookMoveSquare < 64) {
-        if (rookMoveDelta == rookDirectionOffsets.elementAt(0) ||
-            rookMoveDelta == rookDirectionOffsets.elementAt(1)) {
+        if (rookMoveDelta == rookDirectionOffsets.elementAt(0) || rookMoveDelta == rookDirectionOffsets.elementAt(1)) {
           legalRookMoves.add(rookMoveSquare);
         } else {
           int rookSquareY = rookMoveSquare ~/ 8;
@@ -154,11 +151,9 @@ void precomputedMoveData() {
         int queenSquareX = queenMoveSquare - queenSquareY * 8;
         int previousY = ((queenMoveSquare - queenMoveDelta) ~/ 8).abs();
 
-        if (queenMoveDelta == kingQueenDirectionOffsets.elementAt(0) ||
-            queenMoveDelta == kingQueenDirectionOffsets.elementAt(1)) {
+        if (queenMoveDelta == kingQueenDirectionOffsets.elementAt(0) || queenMoveDelta == kingQueenDirectionOffsets.elementAt(1)) {
           legalQueenMoves.add(queenMoveSquare);
-        } else if (queenMoveDelta == kingQueenDirectionOffsets.elementAt(2) ||
-            queenMoveDelta == kingQueenDirectionOffsets.elementAt(3)) {
+        } else if (queenMoveDelta == kingQueenDirectionOffsets.elementAt(2) || queenMoveDelta == kingQueenDirectionOffsets.elementAt(3)) {
           legalQueenMoves.add(queenMoveSquare);
           if (queenSquareX == 0 || queenSquareX == 7) {
             break;
