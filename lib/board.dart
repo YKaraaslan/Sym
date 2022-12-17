@@ -9,5 +9,5 @@ class Board {
   static int opponentColour = Piece.black;
 
   static String startFEN = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
-  static String laterFEN = '8/1k6/3nbq2/8/4K3/1BR5/8/8 w - - 0 1';
+  static String laterFEN = '8/1k3b2/3n1q2/8/5R2/1B2K2r/8/8 w - - 0 1';
 }

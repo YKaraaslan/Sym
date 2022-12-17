@@ -28,16 +28,14 @@ class MyMoves {
         }
       }
     } else if (piecesChecking.isNotEmpty) {
-      if (Piece.isKnight(piecesChecking.first.checkingPiece)) {
-        for (var startSquare = 0; startSquare < 64; startSquare++) {
-          int piece = Board.square[startSquare];
-          if (Piece.isMyKing(piece)) {
-            generateKingMoves(startSquare);
-          } else if (Piece.isMySliding(piece)) {
-            generateSlidingMoves(startSquare, piece, isCaptureCheck: true);
-          } else if (Piece.isMyKnight(piece)) {
-            generateKnightMoves(startSquare, isCaptureCheck: true);
-          }
+      for (var startSquare = 0; startSquare < 64; startSquare++) {
+        int piece = Board.square[startSquare];
+        if (Piece.isMyKing(piece)) {
+          generateKingMoves(startSquare);
+        } else if (Piece.isMySliding(piece)) {
+          generateSlidingMoves(startSquare, piece, isCaptureCheck: true);
+        } else if (Piece.isMyKnight(piece)) {
+          generateKnightMoves(startSquare, isCaptureCheck: true);
         }
       }
     } else {
