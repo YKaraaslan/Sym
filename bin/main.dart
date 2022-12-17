@@ -5,8 +5,8 @@ import 'package:sym/precomputed_move_data.dart';
 import 'package:sym/preposition.dart';
 
 void main(List<String> arguments) {
-  loadPositionFromFen(Board.laterFEN);
-  precomputedMoveData();
-  OpponentMoves().getAttackedSquares();
+  PrePosition().loadPositionFromFen(Board.laterFEN);
+  PrecomputedMoveData().precomputedMoveData();
+  OpponentMoves().getSquares();
   MyMoves().generateLegalMoves();
 }

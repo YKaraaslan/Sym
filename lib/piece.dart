@@ -23,20 +23,8 @@ class Piece {
     return (piece & colourMask) == colour;
   }
 
-  static int colour(int piece) {
-    return piece & colourMask;
-  }
-
   static int pieceType(int piece) {
     return piece & typeMask;
-  }
-
-  static bool isRookOrQueen(int piece) {
-    return (piece & 6) == 6;
-  }
-
-  static bool isBishopOrQueen(int piece) {
-    return (piece & 5) == 5;
   }
 
   static bool isSlidingPiece(int piece) {
@@ -69,6 +57,10 @@ class Piece {
 
   static bool isMySliding(int piece) {
     return isMyQueen(piece) || isMyRook(piece) || isMyBishop(piece);
+  }
+
+  static bool isOpponentsSliding(int piece) {
+    return isOpponentsQueen(piece) || isOpponentsRook(piece) || isOpponentsBishop(piece);
   }
 
   static bool isOpponentsQueen(int piece) {
