@@ -15,11 +15,11 @@ class OpponentMoves {
   List<int> attackedSquares = <int>[];
   List<CheckingPiece> piecesChecking = <CheckingPiece>[];
 
-  List getAttackedSquares() {
+  List getSquares() {
     for (var startSquare = 0; startSquare < 64; startSquare++) {
       int piece = Board.square[startSquare];
       if (Piece.isColour(piece, Board.opponentColour)) {
-        if (Piece.isSlidingPiece(piece)) {
+        if (Piece.isOpponentsSliding(piece)) {
           generateSlidingMovesForOpponent(startSquare, piece);
         } else if (Piece.isKnight(piece)) {
           generateKnightMovesForOpponent(startSquare);
@@ -37,9 +37,8 @@ class OpponentMoves {
   void generateSlidingMovesForOpponent(int startSquare, int piece) {
     int startDirIndex = Piece.pieceType(piece) == Piece.bishop ? 4 : 0;
     int endDirIndex = Piece.pieceType(piece) == Piece.rook ? 4 : 8;
-
     for (var directionIndex = startDirIndex; directionIndex < endDirIndex; directionIndex++) {
-      for (var n = 0; n < numSquaresToEdge[startSquare][directionIndex]; n++) {
+      for (var n = 0; n < PrecomputedMoveData.numSquaresToEdge[startSquare][directionIndex]; n++) {
         int targetSquare = (startSquare + directionOffsets[directionIndex] * (n + 1)).round();
         if (!targetSquare.isNegative) {
           int pieceOnTargetSquare = Board.square[targetSquare];
@@ -54,20 +53,18 @@ class OpponentMoves {
               allTargetSquares: [],
             );
             if (Piece.isRook(piece)) {
-              model.allTargetSquares = rookMoves[startSquare];
+              model.allTargetSquares = PrecomputedMoveData.rookMoves[startSquare];
             } else if (Piece.isBishop(piece)) {
-              model.allTargetSquares = bishopMoves[startSquare];
+              model.allTargetSquares = PrecomputedMoveData.bishopMoves[startSquare];
             } else if (Piece.isQueen(piece)) {
-              model.allTargetSquares = queenMoves[startSquare];
+              model.allTargetSquares = PrecomputedMoveData.queenMoves[startSquare];
             }
             piecesChecking.add(model);
           }
-
           if (!attackedSquares.contains(targetSquare)) {
             attackedSquares.add(targetSquare);
           }
           // Can't move any further in this direction after capturing opponent's piece
-
           if (Piece.isColour(pieceOnTargetSquare, Board.friendlyColour)) {
             break;
           }
@@ -79,29 +76,23 @@ class OpponentMoves {
 /*------------------------------*/
 
   void generateKingMovesForOpponent(int startSquare) {
-    for (int kingMoveIndex = 0; kingMoveIndex < kingMoves[startSquare].length; kingMoveIndex++) {
-      int targetSquare = kingMoves[startSquare][kingMoveIndex];
+    for (int kingMoveIndex = 0; kingMoveIndex < PrecomputedMoveData.kingMoves[startSquare].length; kingMoveIndex++) {
+      int targetSquare = PrecomputedMoveData.kingMoves[startSquare][kingMoveIndex];
       int pieceOnTargetSquare = Board.square[targetSquare];
-
       if (Piece.isColour(pieceOnTargetSquare, Board.opponentColour)) {
         continue;
       }
-
-      //bool isCapture = Piece.IsColour (pieceOnTargetSquare, Board.friendlyColour);
-
       if (!attackedSquares.contains(targetSquare)) {
         attackedSquares.add(targetSquare);
       }
-
-      // print(moveName(startSquare, targetSquare));
     }
   }
 
 /*---------------------------------*/
 
   void generateKnightMovesForOpponent(int startSquare) {
-    for (int knightMoveIndex = 0; knightMoveIndex < knightMoves[startSquare].length; knightMoveIndex++) {
-      int targetSquare = knightMoves[startSquare][knightMoveIndex];
+    for (int knightMoveIndex = 0; knightMoveIndex < PrecomputedMoveData.knightMoves[startSquare].length; knightMoveIndex++) {
+      int targetSquare = PrecomputedMoveData.knightMoves[startSquare][knightMoveIndex];
       int targetSquarePiece = Board.square[targetSquare];
       /*bool isCapture = Piece.IsColour(targetSquarePiece, Board.friendlyColour);
     if (isCapture) {
@@ -109,7 +100,8 @@ class OpponentMoves {
     }*/
 
       if (Piece.isMyKing(targetSquarePiece)) {
-        piecesChecking.add(CheckingPiece(checkingPiece: Board.square[startSquare], square: startSquare, allTargetSquares: knightMoves[startSquare]));
+        piecesChecking.add(CheckingPiece(
+            checkingPiece: Board.square[startSquare], square: startSquare, allTargetSquares: PrecomputedMoveData.knightMoves[startSquare]));
       }
 
       // Skip if square contains friendly piece, or if in check and knight is not interposing/capturing checking piece
@@ -127,8 +119,8 @@ class OpponentMoves {
 /*---------------------------------*/
 
   void generateBlackPawnMovesForOpponent(int startSquare) {
-    for (int blackPawnMoveIndex = 0; blackPawnMoveIndex < pawnAttacksBlack[startSquare].length; blackPawnMoveIndex++) {
-      int targetSquare = pawnAttacksBlack[startSquare][blackPawnMoveIndex];
+    for (int blackPawnMoveIndex = 0; blackPawnMoveIndex < PrecomputedMoveData.pawnAttacksBlack[startSquare].length; blackPawnMoveIndex++) {
+      int targetSquare = PrecomputedMoveData.pawnAttacksBlack[startSquare][blackPawnMoveIndex];
       int targetSquarePiece = Board.square[targetSquare];
 
       // Skip if square contains friendly piece, or if in check and knight is not interposing/capturing checking piece

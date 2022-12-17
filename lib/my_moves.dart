@@ -44,7 +44,7 @@ class MyMoves {
       for (var startSquare = 0; startSquare < 64; startSquare++) {
         int piece = Board.square[startSquare];
         if (Piece.isColour(piece, Board.colorToMove)) {
-          if (Piece.isSlidingPiece(piece)) {
+          if (Piece.isMySliding(piece)) {
             generateSlidingMoves(startSquare, piece);
           } else if (Piece.isKnight(piece)) {
             generateKnightMoves(startSquare);
@@ -77,7 +77,7 @@ class MyMoves {
     int endDirIndex = Piece.pieceType(piece) == Piece.rook ? 4 : 8;
 
     for (var directionIndex = startDirIndex; directionIndex < endDirIndex; directionIndex++) {
-      for (var n = 0; n < numSquaresToEdge[startSquare][directionIndex]; n++) {
+      for (var n = 0; n < PrecomputedMoveData.numSquaresToEdge[startSquare][directionIndex]; n++) {
         int targetSquare = (startSquare + directionOffsets[directionIndex] * (n + 1)).round();
 
         if (!targetSquare.isNegative) {
@@ -107,8 +107,8 @@ class MyMoves {
 /*------------------------------*/
 
   void generateKingMoves(int startSquare) {
-    for (int kingMoveIndex = 0; kingMoveIndex < kingMoves[startSquare].length; kingMoveIndex++) {
-      int targetSquare = kingMoves[startSquare][kingMoveIndex];
+    for (int kingMoveIndex = 0; kingMoveIndex < PrecomputedMoveData.kingMoves[startSquare].length; kingMoveIndex++) {
+      int targetSquare = PrecomputedMoveData.kingMoves[startSquare][kingMoveIndex];
       int pieceOnTargetSquare = Board.square[targetSquare];
 
       if (Piece.isColour(pieceOnTargetSquare, Board.friendlyColour)) {
@@ -127,8 +127,8 @@ class MyMoves {
 /*---------------------------------*/
 
   void generateKnightMoves(int startSquare, {bool isCaptureCheck = false}) {
-    for (int knightMoveIndex = 0; knightMoveIndex < knightMoves[startSquare].length; knightMoveIndex++) {
-      int targetSquare = knightMoves[startSquare][knightMoveIndex];
+    for (int knightMoveIndex = 0; knightMoveIndex < PrecomputedMoveData.knightMoves[startSquare].length; knightMoveIndex++) {
+      int targetSquare = PrecomputedMoveData.knightMoves[startSquare][knightMoveIndex];
       int targetSquarePiece = Board.square[targetSquare];
 
       // Skip if square contains friendly piece, or if in check and knight is not interposing/capturing checking piece
