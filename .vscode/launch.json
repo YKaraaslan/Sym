@@ -8,7 +8,7 @@
             "name": "Dart",
             "type": "dart",
             "request": "launch",
-            "program": "src/main.dart",
+            "program": "bin/main.dart",
             "console": "terminal"
         },
     ]

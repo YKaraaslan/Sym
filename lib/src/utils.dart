@@ -9,6 +9,6 @@ bool isUpperCase(String s) {
   return false;
 }
 
-int rankIndex(startSquare) {
+int rankIndex(int startSquare) {
   return startSquare ~/ 8;
 }

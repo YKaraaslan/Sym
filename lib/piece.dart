@@ -67,6 +67,10 @@ class Piece {
     return Piece.king | Board.friendlyColour == piece;
   }
 
+  static bool isMySliding(int piece) {
+    return isMyQueen(piece) || isMyRook(piece) || isMyBishop(piece);
+  }
+
   static bool isOpponentsQueen(int piece) {
     return Piece.queen | Board.opponentColour == piece;
   }
@@ -117,22 +121,22 @@ class Piece {
 
   static String pieceName(int piece) {
     if (isQueen(piece)) {
-      return "Queen";
+      return 'Queen';
     }
     if (isRook(piece)) {
-      return "Rook";
+      return 'Rook';
     }
     if (isBishop(piece)) {
-      return "Bishop";
+      return 'Bishop';
     }
     if (isKnight(piece)) {
-      return "Knight";
+      return 'Knight';
     }
     if (isKing(piece)) {
-      return "King";
+      return 'King';
     }
     if (isPawn(piece)) {
-      return "Pawn";
+      return 'Pawn';
     } else {
       return '';
     }

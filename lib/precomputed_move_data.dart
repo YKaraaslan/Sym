@@ -1,27 +1,26 @@
 import 'dart:math';
 
-var numSquaresToEdge = List.generate(64, (_) => List.filled(64, 0));
-var knightMoves = List.generate(64, (_) => List.filled(64, 0));
-var kingMoves = List.generate(64, (_) => List.filled(64, 0));
-var rookMoves = List.generate(64, (_) => List.filled(64, 0));
-var bishopMoves = List.generate(64, (_) => List.filled(64, 0));
-var queenMoves = List.generate(64, (_) => List.filled(64, 0));
-var whitePawnMoves = List.generate(64, (_) => List.filled(64, 0));
-var blackPawnMoves = List.generate(64, (_) => List.filled(64, 0));
-var pawnAttacksWhite = List.generate(64, (_) => List.filled(64, 0));
-var pawnAttacksBlack = List.generate(64, (_) => List.filled(64, 0));
-var allKnightJumps = {15, 17, -17, -15, 10, -6, 6, -10};
-var kingQueenDirectionOffsets = {8, -8, -1, 1, 9, -9, 7, -7};
-var rookDirectionOffsets = {8, -8, -1, 1};
-var bishopDirectionOffsets = {9, -9, 7, -7};
-var whitePawnDirectionOffsets = {8};
-var blackPawnDirectionOffsets = {-8};
+List<List<int>> numSquaresToEdge = List.generate(64, (_) => List.filled(64, 0));
+List<List<int>> knightMoves = List.generate(64, (_) => List.filled(64, 0));
+List<List<int>> kingMoves = List.generate(64, (_) => List.filled(64, 0));
+List<List<int>> rookMoves = List.generate(64, (_) => List.filled(64, 0));
+List<List<int>> bishopMoves = List.generate(64, (_) => List.filled(64, 0));
+List<List<int>> queenMoves = List.generate(64, (_) => List.filled(64, 0));
+List<List<int>> whitePawnMoves = List.generate(64, (_) => List.filled(64, 0));
+List<List<int>> blackPawnMoves = List.generate(64, (_) => List.filled(64, 0));
+List<List<int>> pawnAttacksWhite = List.generate(64, (_) => List.filled(64, 0));
+List<List<int>> pawnAttacksBlack = List.generate(64, (_) => List.filled(64, 0));
+Set<int> allKnightJumps = {15, 17, -17, -15, 10, -6, 6, -10};
+Set<int> kingQueenDirectionOffsets = {8, -8, -1, 1, 9, -9, 7, -7};
+Set<int> rookDirectionOffsets = {8, -8, -1, 1};
+Set<int> bishopDirectionOffsets = {9, -9, 7, -7};
+Set<int> whitePawnDirectionOffsets = {8};
+Set<int> blackPawnDirectionOffsets = {-8};
 
-precomputedMoveData() {
+void precomputedMoveData() {
   for (int squareIndex = 0; squareIndex < 64; squareIndex++) {
     int y = squareIndex ~/ 8;
     int x = squareIndex - y * 8;
-
     int north = 7 - y;
     int south = y;
     int west = x;
@@ -47,7 +46,8 @@ precomputedMoveData() {
         int knightSquareX = knightJumpSquare - knightSquareY * 8;
 
         // Ensure knight has moved max of 2 squares on x/y axis (to reject indices that have wrapped around side of board)
-        int maxCoordMoveDst = max((x - knightSquareX).abs(), (y - knightSquareY).abs());
+        int maxCoordMoveDst =
+            max((x - knightSquareX).abs(), (y - knightSquareY).abs());
 
         if (maxCoordMoveDst == 2) {
           legalKnightJumps.add(knightJumpSquare);
@@ -66,7 +66,8 @@ precomputedMoveData() {
         int kingSquareY = kingMoveSquare ~/ 8;
         int kingSquareX = kingMoveSquare - kingSquareY * 8;
         // Ensure king has moved max of 1 square on x/y axis (to reject indices that have wrapped around side of board)
-        int maxCoordMoveDst = max((x - kingSquareX).abs(), (y - kingSquareY).abs());
+        int maxCoordMoveDst =
+            max((x - kingSquareX).abs(), (y - kingSquareY).abs());
         if (maxCoordMoveDst == 1) {
           legalKingMoves.add(kingMoveSquare);
         }
@@ -103,7 +104,8 @@ precomputedMoveData() {
     for (var rookMoveDelta in rookDirectionOffsets) {
       int rookMoveSquare = squareIndex + rookMoveDelta;
       while (rookMoveSquare >= 0 && rookMoveSquare < 64) {
-        if (rookMoveDelta == rookDirectionOffsets.elementAt(0) || rookMoveDelta == rookDirectionOffsets.elementAt(1)) {
+        if (rookMoveDelta == rookDirectionOffsets.elementAt(0) ||
+            rookMoveDelta == rookDirectionOffsets.elementAt(1)) {
           legalRookMoves.add(rookMoveSquare);
         } else {
           int rookSquareY = rookMoveSquare ~/ 8;
@@ -152,9 +154,11 @@ precomputedMoveData() {
         int queenSquareX = queenMoveSquare - queenSquareY * 8;
         int previousY = ((queenMoveSquare - queenMoveDelta) ~/ 8).abs();
 
-        if (queenMoveDelta == kingQueenDirectionOffsets.elementAt(0) || queenMoveDelta == kingQueenDirectionOffsets.elementAt(1)) {
+        if (queenMoveDelta == kingQueenDirectionOffsets.elementAt(0) ||
+            queenMoveDelta == kingQueenDirectionOffsets.elementAt(1)) {
           legalQueenMoves.add(queenMoveSquare);
-        } else if (queenMoveDelta == kingQueenDirectionOffsets.elementAt(2) || queenMoveDelta == kingQueenDirectionOffsets.elementAt(3)) {
+        } else if (queenMoveDelta == kingQueenDirectionOffsets.elementAt(2) ||
+            queenMoveDelta == kingQueenDirectionOffsets.elementAt(3)) {
           legalQueenMoves.add(queenMoveSquare);
           if (queenSquareX == 0 || queenSquareX == 7) {
             break;
@@ -191,7 +195,6 @@ precomputedMoveData() {
     }
 
     whitePawnMoves[squareIndex] = legalWhitePawnMoves;
-
 
     // Black Pawn Moves
     var legalBlackPawnMoves = <int>[];

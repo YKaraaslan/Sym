@@ -1,11 +1,23 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 class Move {
   int startSquare;
   int targetSquare;
 
   Move(this.startSquare, this.targetSquare);
+
+  @override
+  bool operator ==(covariant Move other) {
+    if (identical(this, other)) return true;
+
+    return other.startSquare == startSquare &&
+        other.targetSquare == targetSquare;
+  }
+
+  @override
+  int get hashCode => startSquare.hashCode ^ targetSquare.hashCode;
 }
 
-String moveName(startSquare, targetSquare) {
+String moveName(int startSquare, int targetSquare) {
   String res = '';
   var aSquares = [0, 8, 16, 24, 32, 40, 48, 56];
   var bSquares = [1, 9, 17, 25, 33, 41, 49, 57];
