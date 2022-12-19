@@ -1,0 +1,79 @@
+import '../utils/constants.dart';
+import '../utils/enums.dart';
+import 'move.dart';
+import 'piece.dart';
+
+class Rook extends Piece {
+  Rook(int x, int y, PieceColor color) : super(x, y, color);
+
+  @override
+  Set<Move> generateMoves(List<List<Piece?>> board) {
+    Set<Move> moves = {};
+
+    // Generate moves in the up direction
+    for (int row = x + 1; row < 8; row++) {
+      // Check if the destination square is empty or contains an enemy piece
+      Piece? piece = board[row][y];
+      if (piece == null) {
+        moves.add(Move(x, y, row, y));
+      } else {
+        if (piece.color != color) {
+          moves.add(Move(x, y, row, y));
+        }
+        break;
+      }
+    }
+
+    // Generate moves in the down direction
+    for (int row = x - 1; row >= 0; row--) {
+      // Check if the destination square is empty or contains an enemy piece
+      Piece? piece = board[row][y];
+      if (piece == null) {
+        moves.add(Move(x, y, row, y));
+      } else {
+        if (piece.color != color) {
+          moves.add(Move(x, y, row, y));
+        }
+        break;
+      }
+    }
+
+    // Generate moves in the right direction
+    for (int c = y + 1; c < 8; c++) {
+      // Check if the destination square is empty or contains an enemy piece
+      Piece? piece = board[x][c];
+      if (piece == null) {
+        moves.add(Move(x, y, x, c));
+      } else {
+        if (piece.color != color) {
+          moves.add(Move(x, y, x, c));
+        }
+        break;
+      }
+    } // Generate moves in the left direction
+    for (int c = y - 1; c >= 0; c--) {
+      // Check if the destination square is empty or contains an enemy piece
+      Piece? piece = board[x][c];
+      if (piece == null) {
+        moves.add(Move(x, y, x, c));
+      } else {
+        if (piece.color != color) {
+          moves.add(Move(x, y, x, c));
+        }
+        break;
+      }
+    }
+
+    return moves;
+  }
+
+  @override
+  Rook copy() {
+    return Rook(x, y, color);
+  }
+
+  @override
+  String getSymbol() {
+    return color == white ? 'R' : 'r';
+  }
+}
