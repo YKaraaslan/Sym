@@ -171,6 +171,7 @@ class Engine {
         Piece? piece = board[i][j];
         if (piece != null && piece is King && piece.color == color) {
           king = piece;
+          return piece;
         }
       }
     }

@@ -1,4 +1,5 @@
 import 'package:sym/board.dart';
+import 'package:sym/move_generator.dart';
 import 'package:sym/square_checker.dart';
 import 'package:sym/utils/constants.dart';
 import 'package:test/test.dart';
@@ -48,17 +49,17 @@ void main() {
     });
 
     test('pawn', () {
-      ChessBoard().loadPositionFromFen('8/8/8/8/8/3P4/8/8 w - - 0 1');
+      ChessBoard().loadPositionFromFen('8/2p5/K2p4/8/8/8/8/8 w - - 1 8');
       int number = 0;
       for (int i = 0; i < 8; i++) {
         for (int j = 0; j < 8; j++) {
-          if (SquareChecker().isSquareAttacked(board, i, j, activeColor)) {
+          if (SquareChecker().isSquareAttacked(board, i, j, black)) {
             number++;
           }
         }
       }
 
-      expect(number, 2);
+      expect(number, 4);
     });
 
     test('king', () {
@@ -81,13 +82,18 @@ void main() {
       for (int i = 0; i < 8; i++) {
         for (int j = 0; j < 8; j++) {
           if (SquareChecker().isSquareAttacked(board, i, j, activeColor)) {
-            print('$i$j');
             number++;
           }
         }
       }
 
       expect(number, 27);
+    });
+
+    test('king pawn', () {
+      ChessBoard().loadPositionFromFen('8/2p5/K2p4/8/8/8/8/8 w - - 1 8');
+      var moves = MoveGenerator().generateMoves(board, activeColor);
+      expect(moves.length, 4);
     });
   });
 }

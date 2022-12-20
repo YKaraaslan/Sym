@@ -22,7 +22,6 @@ class King extends Piece {
         // Check if the destination square is within the board bounds
         if (row < 0 || row >= 8 || col < 0 || col >= 8) continue;
 
-        // Check if the destination square is safe
         if (!isSquareAttacked(board, row, col)) {
           // Check if the destination square is empty or contains an enemy piece
           Piece? piece = board[row][col];
@@ -34,7 +33,7 @@ class King extends Piece {
     }
 
     if (!hasMoved) {
-      if (color == white) {
+      if (color == white && board[0][4] is King) {
         // Check for kingside castling
         if (board[0][5] == null && board[0][6] == null && board[0][7] is Rook && !(board[0][7]?.hasMoved ?? true)) {
           if (!isSquareAttacked(board, 0, 5) && !isSquareAttacked(board, 0, 6)) {
@@ -48,7 +47,7 @@ class King extends Piece {
             }
           }
         }
-      } else {
+      } else if (color == black && board[7][4] is King) {
         // Check for kingside castling
         if (board[7][5] == null && board[7][6] == null && board[7][7] is Rook && !(board[7][7]?.hasMoved ?? true)) {
           if (!isSquareAttacked(board, 7, 5) && !isSquareAttacked(board, 7, 6)) {
@@ -68,7 +67,7 @@ class King extends Piece {
     return moves;
   }
 
-  bool isSquareAttacked(List<List<Piece?>> board, int col, int row) {
+  bool isSquareAttacked(List<List<Piece?>> board, int row, int col) {
     King king = Engine().findKing(board, color);
     Engine().removeKing(board, king);
     var result = SquareChecker().isSquareAttacked(board, row, col, color == white ? black : white);

@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:sym/models/move.dart';
@@ -8,9 +9,9 @@ import 'package:sym/utils/constants.dart';
 
 void main() {
   // Initialize the chess board to the starting position
-  chessBoard.loadPositionFromFen('8/2p5/3p4/KP5r/1R3p1k/8/4P1P1/8 w - - 1 8');
+  chessBoard.loadPositionFromFen(startingPosition);
 
-  print(moveGenerationTest(1));
+  // print(moveGenerationTest(3));
 
   // for (int i = 0; i < 8; i++) {
   //   for (int j = 0; j < 8; j++) {
@@ -21,10 +22,10 @@ void main() {
   // }
 
   // Set up the input and output streams
-  // stdin.transform(utf8.decoder).transform(LineSplitter()).listen(handleInput);
+  stdin.transform(utf8.decoder).transform(LineSplitter()).listen(handleInput);
 
   // Send the "uci" command to the GUI to initiate the UCI communication
-  // stdout.write('uci\n');
+  stdout.write('uci\n');
 }
 
 int moveGenerationTest(int depth) {
@@ -36,9 +37,9 @@ int moveGenerationTest(int depth) {
   int numberOfPositions = 0;
 
   for (Move move in moves) {
-    chessBoard.makeMove(move.toUciString());
+    var a = MoveGenerator().deepCopyBoard(board);
+    chessBoard.makeMoveForBoard(a, move.toUciString());
     numberOfPositions += moveGenerationTest(depth - 1);
-    chessBoard.undoMove();
   }
 
   return numberOfPositions;
@@ -101,17 +102,6 @@ void handleInput(String input) {
     case 'quit':
       // Terminate the program when receiving the "quit" command
       exit(0);
-    case 'move':
-      if (tokens[1].length != 4) break;
-      chessBoard.makeMove(tokens[1]);
-      break;
-    case 'eval':
-      print(Position().evaluatePosition(board));
-      break;
-    case 'change':
-      activeColor = activeColor == white ? black : white;
-      print(activeColor);
-      break;
     default:
       // Ignore unknown commands
       break;

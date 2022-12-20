@@ -76,9 +76,7 @@ class ChessBoard {
       int rookCol = (move.newColumn > move.column) ? 7 : 0;
       Piece? rook = board[rookRow][rookCol];
       board[rookRow][rookCol] = null;
-      int newRookCol = (move.newColumn > move.column)
-          ? move.newColumn - 1
-          : move.newColumn + 1;
+      int newRookCol = (move.newColumn > move.column) ? move.newColumn - 1 : move.newColumn + 1;
       board[rookRow][newRookCol] = rook;
 
       // Update the hasMoved property of the king and rook
@@ -105,16 +103,15 @@ class ChessBoard {
       }
 
       if (!undo) {
-        print(moveString);
-        // print('\n' * 10);
-        // for (var i = board.length - 1; i >= 0; i--) {
-        //   var symbol = '';
-        //   for (var element in board[i]) {
-        //     symbol += '${element?.getSymbol() ?? '.'} ';
-        //   }
-        //   print(symbol);
-        // }
-        // print('\n' * 5);
+        print('\n' * 10);
+        for (var i = board.length - 1; i >= 0; i--) {
+          var symbol = '';
+          for (var element in board[i]) {
+            symbol += '${element?.getSymbol() ?? '.'} ';
+          }
+          print(symbol);
+        }
+        print('\n' * 5);
       }
     }
 
@@ -181,38 +178,29 @@ class ChessBoard {
     Move move = Move.fromUciString(moveString);
 
     if (move.isCastling) {
-      int rookx1;
-      int rooky1;
-      if (move.newRow > move.row) {
-        // Kingside castling
-        localBoard[move.row + 1][move.column] =
-            localBoard[move.row + 3][move.column];
-        localBoard[move.row + 3][move.column] = null;
-        rookx1 = move.row + 1;
-        rooky1 = move.column;
-      } else {
-        // Queenside castling
-        localBoard[move.row - 1][move.column] =
-            localBoard[move.row - 4][move.column];
-        localBoard[move.row - 4][move.column] = null;
-        rookx1 = move.row - 1;
-        rooky1 = move.column;
-      }
+      int rookRow = move.row;
+      int rookCol = (move.newColumn > move.column) ? 7 : 0;
+      Piece? rook = localBoard[rookRow][rookCol];
+      localBoard[rookRow][rookCol] = null;
+      int newRookCol = (move.newColumn > move.column) ? move.newColumn - 1 : move.newColumn + 1;
+      localBoard[rookRow][newRookCol] = rook;
+
       // Update the hasMoved property of the king and rook
       (localBoard[move.row][move.column] as King).hasMoved = true;
-      (localBoard[rookx1][rooky1] as Rook).hasMoved = true;
+      (localBoard[rookRow][newRookCol] as Rook).hasMoved = true;
     } else {
       // Perform a regular move
-      localBoard[move.newRow][move.newColumn] =
-          localBoard[move.row][move.column];
+      localBoard[move.newRow][move.newColumn] = localBoard[move.row][move.column];
       localBoard[move.row][move.column] = null;
     }
+
     //Check En passant
     if (activeColor == white && move.row == 1 && move.newRow == 3) {
       localBoard[move.newRow][move.newColumn]?.enPassant = true;
     } else if (activeColor == black && move.row == 6 && move.newRow == 4) {
       localBoard[move.newRow][move.newColumn]?.enPassant = true;
     }
+    activeColor = activeColor == white ? black : white;
   }
 
   void printTheBoard() {

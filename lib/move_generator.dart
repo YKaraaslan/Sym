@@ -29,7 +29,6 @@ class MoveGenerator {
     moves = moveList.toSet();
     // Choose a move using some strategy, such as minimax with alpha-beta pruning
     Move move = chooseMove(board, moves);
-
     return move.toUciString();
   }
 
