@@ -26,7 +26,12 @@ class King extends Piece {
           // Check if the destination square is empty or contains an enemy piece
           Piece? piece = board[row][col];
           if (piece == null || piece.color != color) {
-            moves.add(Move(row: x, column: y, newRow: row, newColumn: col, newSquare: newSquareString(row, col)));
+            moves.add(Move(
+                row: x,
+                column: y,
+                newRow: row,
+                newColumn: col,
+                newSquare: newSquareString(row, col)));
           }
         }
       }
@@ -35,29 +40,73 @@ class King extends Piece {
     if (!hasMoved) {
       if (color == white && board[0][4] is King) {
         // Check for kingside castling
-        if (board[0][5] == null && board[0][6] == null && board[0][7] is Rook && !(board[0][7]?.hasMoved ?? true)) {
-          if (!isSquareAttacked(board, 0, 5) && !isSquareAttacked(board, 0, 6)) {
-            moves.add(Move(row: 0, column: 4, newRow: 0, newColumn: 6, isCastling: true, newSquare: newSquareString(0, 6)));
+        if (board[0][5] == null &&
+            board[0][6] == null &&
+            board[0][7] is Rook &&
+            !(board[0][7]?.hasMoved ?? true)) {
+          if (!isSquareAttacked(board, 0, 5) &&
+              !isSquareAttacked(board, 0, 6)) {
+            moves.add(Move(
+                row: 0,
+                column: 4,
+                newRow: 0,
+                newColumn: 6,
+                isCastling: true,
+                newSquare: newSquareString(0, 6)));
           }
         } else {
           // Check for queenside castling
-          if (board[0][1] == null && board[0][2] == null && board[0][3] == null && board[0][0] is Rook && !(board[0][0]?.hasMoved ?? true)) {
-            if (!isSquareAttacked(board, 0, 1) && !isSquareAttacked(board, 0, 2) && !isSquareAttacked(board, 0, 3)) {
-              moves.add(Move(row: 0, column: 4, newRow: 0, newColumn: 2, isCastling: true, newSquare: newSquareString(0, 2)));
+          if (board[0][1] == null &&
+              board[0][2] == null &&
+              board[0][3] == null &&
+              board[0][0] is Rook &&
+              !(board[0][0]?.hasMoved ?? true)) {
+            if (!isSquareAttacked(board, 0, 1) &&
+                !isSquareAttacked(board, 0, 2) &&
+                !isSquareAttacked(board, 0, 3)) {
+              moves.add(Move(
+                  row: 0,
+                  column: 4,
+                  newRow: 0,
+                  newColumn: 2,
+                  isCastling: true,
+                  newSquare: newSquareString(0, 2)));
             }
           }
         }
       } else if (color == black && board[7][4] is King) {
         // Check for kingside castling
-        if (board[7][5] == null && board[7][6] == null && board[7][7] is Rook && !(board[7][7]?.hasMoved ?? true)) {
-          if (!isSquareAttacked(board, 7, 5) && !isSquareAttacked(board, 7, 6)) {
-            moves.add(Move(row: 7, column: 4, newRow: 7, newColumn: 6, isCastling: true, newSquare: newSquareString(7, 6)));
+        if (board[7][5] == null &&
+            board[7][6] == null &&
+            board[7][7] is Rook &&
+            !(board[7][7]?.hasMoved ?? true)) {
+          if (!isSquareAttacked(board, 7, 5) &&
+              !isSquareAttacked(board, 7, 6)) {
+            moves.add(Move(
+                row: 7,
+                column: 4,
+                newRow: 7,
+                newColumn: 6,
+                isCastling: true,
+                newSquare: newSquareString(7, 6)));
           }
         } else {
           // Check for queenside castling
-          if (board[7][1] == null && board[7][2] == null && board[7][3] == null && board[7][0] is Rook && !(board[7][0]?.hasMoved ?? true)) {
-            if (!isSquareAttacked(board, 7, 1) && !isSquareAttacked(board, 7, 2) && !isSquareAttacked(board, 7, 3)) {
-              moves.add(Move(row: 7, column: 4, newRow: 7, newColumn: 2, isCastling: true, newSquare: newSquareString(7, 2)));
+          if (board[7][1] == null &&
+              board[7][2] == null &&
+              board[7][3] == null &&
+              board[7][0] is Rook &&
+              !(board[7][0]?.hasMoved ?? true)) {
+            if (!isSquareAttacked(board, 7, 1) &&
+                !isSquareAttacked(board, 7, 2) &&
+                !isSquareAttacked(board, 7, 3)) {
+              moves.add(Move(
+                  row: 7,
+                  column: 4,
+                  newRow: 7,
+                  newColumn: 2,
+                  isCastling: true,
+                  newSquare: newSquareString(7, 2)));
             }
           }
         }
@@ -70,7 +119,8 @@ class King extends Piece {
   bool isSquareAttacked(List<List<Piece?>> board, int row, int col) {
     King king = Engine().findKing(board, color);
     Engine().removeKing(board, king);
-    var result = SquareChecker().isSquareAttacked(board, row, col, color == white ? black : white);
+    var result = SquareChecker()
+        .isSquareAttacked(board, row, col, color == white ? black : white);
     Engine().putKingBack(board, king);
     return result;
   }

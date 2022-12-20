@@ -122,7 +122,8 @@ void main() {
     });
 
     test('king move', () {
-      chessBoard.loadPositionFromFen('4kbr1/5p1p/p1Pp1Q2/p5P1/Pp2P2P/7R/2q1K1P1/7R w - - 5 22');
+      chessBoard.loadPositionFromFen(
+          '4kbr1/5p1p/p1Pp1Q2/p5P1/Pp2P2P/7R/2q1K1P1/7R w - - 5 22');
       Set<Move> moves = moveGenerator.generateMoves(board, activeColor);
 
       for (var element in moves) {

@@ -15,10 +15,20 @@ class Rook extends Piece {
       // Check if the destination square is empty or contains an enemy piece
       Piece? piece = board[row][y];
       if (piece == null) {
-        moves.add(Move(row: x, column: y, newRow: row, newColumn: y, newSquare: newSquareString(row, y)));
+        moves.add(Move(
+            row: x,
+            column: y,
+            newRow: row,
+            newColumn: y,
+            newSquare: newSquareString(row, y)));
       } else {
         if (piece.color != color) {
-          moves.add(Move(row: x, column: y, newRow: row, newColumn: y, newSquare: newSquareString(row, y)));
+          moves.add(Move(
+              row: x,
+              column: y,
+              newRow: row,
+              newColumn: y,
+              newSquare: newSquareString(row, y)));
         }
         break;
       }
@@ -29,10 +39,20 @@ class Rook extends Piece {
       // Check if the destination square is empty or contains an enemy piece
       Piece? piece = board[row][y];
       if (piece == null) {
-        moves.add(Move(row: x, column: y, newRow: row, newColumn: y, newSquare: newSquareString(row, y)));
+        moves.add(Move(
+            row: x,
+            column: y,
+            newRow: row,
+            newColumn: y,
+            newSquare: newSquareString(row, y)));
       } else {
         if (piece.color != color) {
-          moves.add(Move(row: x, column: y, newRow: row, newColumn: y, newSquare: newSquareString(row, y)));
+          moves.add(Move(
+              row: x,
+              column: y,
+              newRow: row,
+              newColumn: y,
+              newSquare: newSquareString(row, y)));
         }
         break;
       }
@@ -43,10 +63,20 @@ class Rook extends Piece {
       // Check if the destination square is empty or contains an enemy piece
       Piece? piece = board[x][c];
       if (piece == null) {
-        moves.add(Move(row: x, column: y, newRow: x, newColumn: c, newSquare: newSquareString(x, c)));
+        moves.add(Move(
+            row: x,
+            column: y,
+            newRow: x,
+            newColumn: c,
+            newSquare: newSquareString(x, c)));
       } else {
         if (piece.color != color) {
-          moves.add(Move(row: x, column: y, newRow: x, newColumn: c, newSquare: newSquareString(x, c)));
+          moves.add(Move(
+              row: x,
+              column: y,
+              newRow: x,
+              newColumn: c,
+              newSquare: newSquareString(x, c)));
         }
         break;
       }
@@ -55,10 +85,20 @@ class Rook extends Piece {
       // Check if the destination square is empty or contains an enemy piece
       Piece? piece = board[x][c];
       if (piece == null) {
-        moves.add(Move(row: x, column: y, newRow: x, newColumn: c, newSquare: newSquareString(x, c)));
+        moves.add(Move(
+            row: x,
+            column: y,
+            newRow: x,
+            newColumn: c,
+            newSquare: newSquareString(x, c)));
       } else {
         if (piece.color != color) {
-          moves.add(Move(row: x, column: y, newRow: x, newColumn: c, newSquare: newSquareString(x, c)));
+          moves.add(Move(
+              row: x,
+              column: y,
+              newRow: x,
+              newColumn: c,
+              newSquare: newSquareString(x, c)));
         }
         break;
       }

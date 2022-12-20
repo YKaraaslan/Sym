@@ -76,7 +76,9 @@ class ChessBoard {
       int rookCol = (move.newColumn > move.column) ? 7 : 0;
       Piece? rook = board[rookRow][rookCol];
       board[rookRow][rookCol] = null;
-      int newRookCol = (move.newColumn > move.column) ? move.newColumn - 1 : move.newColumn + 1;
+      int newRookCol = (move.newColumn > move.column)
+          ? move.newColumn - 1
+          : move.newColumn + 1;
       board[rookRow][newRookCol] = rook;
 
       // Update the hasMoved property of the king and rook
@@ -182,7 +184,9 @@ class ChessBoard {
       int rookCol = (move.newColumn > move.column) ? 7 : 0;
       Piece? rook = localBoard[rookRow][rookCol];
       localBoard[rookRow][rookCol] = null;
-      int newRookCol = (move.newColumn > move.column) ? move.newColumn - 1 : move.newColumn + 1;
+      int newRookCol = (move.newColumn > move.column)
+          ? move.newColumn - 1
+          : move.newColumn + 1;
       localBoard[rookRow][newRookCol] = rook;
 
       // Update the hasMoved property of the king and rook
@@ -190,7 +194,8 @@ class ChessBoard {
       (localBoard[rookRow][newRookCol] as Rook).hasMoved = true;
     } else {
       // Perform a regular move
-      localBoard[move.newRow][move.newColumn] = localBoard[move.row][move.column];
+      localBoard[move.newRow][move.newColumn] =
+          localBoard[move.row][move.column];
       localBoard[move.row][move.column] = null;
     }
 

@@ -9,20 +9,33 @@ import 'utils/constants.dart';
 import 'utils/enums.dart';
 
 class SquareChecker {
-  bool isSquareAttacked(List<List<Piece?>> board, int row, int col, PieceColor attackedByColor) {
+  bool isSquareAttacked(
+      List<List<Piece?>> board, int row, int col, PieceColor attackedByColor) {
     // Check for attacks by pawns
     if (attackedByColor == white) {
-      if (row > 0 && col > 0 && board[row - 1][col - 1] is Pawn && board[row - 1][col - 1]!.color == white) {
+      if (row > 0 &&
+          col > 0 &&
+          board[row - 1][col - 1] is Pawn &&
+          board[row - 1][col - 1]!.color == white) {
         return true;
       }
-      if (row > 0 && col < board[0].length - 1 && board[row - 1][col + 1] is Pawn && board[row - 1][col + 1]!.color == white) {
+      if (row > 0 &&
+          col < board[0].length - 1 &&
+          board[row - 1][col + 1] is Pawn &&
+          board[row - 1][col + 1]!.color == white) {
         return true;
       }
     } else {
-      if (row < board.length - 1 && col > 0 && board[row + 1][col - 1] is Pawn && board[row + 1][col - 1]!.color == black) {
+      if (row < board.length - 1 &&
+          col > 0 &&
+          board[row + 1][col - 1] is Pawn &&
+          board[row + 1][col - 1]!.color == black) {
         return true;
       }
-      if (row < board.length - 1 && col < board[0].length - 1 && board[row + 1][col + 1] is Pawn && board[row + 1][col + 1]!.color == black) {
+      if (row < board.length - 1 &&
+          col < board[0].length - 1 &&
+          board[row + 1][col + 1] is Pawn &&
+          board[row + 1][col + 1]!.color == black) {
         return true;
       }
     }
@@ -37,7 +50,8 @@ class SquareChecker {
           continue;
         }
         // Check if the destination square contains a knight of the correct color
-        if (board[row + r][col + c] is Knight && board[row + r][col + c]!.color == attackedByColor) {
+        if (board[row + r][col + c] is Knight &&
+            board[row + r][col + c]!.color == attackedByColor) {
           return true;
         }
       }
@@ -181,7 +195,12 @@ class SquareChecker {
         if (i == 0 && j == 0) continue; // skip the current square
         int r = row + i;
         int c = col + j;
-        if (r >= 0 && r < board.length && c >= 0 && c < board[0].length && board[r][c] is King && board[r][c]!.color == attackedByColor) {
+        if (r >= 0 &&
+            r < board.length &&
+            c >= 0 &&
+            c < board[0].length &&
+            board[r][c] is King &&
+            board[r][c]!.color == attackedByColor) {
           return true;
         }
       }

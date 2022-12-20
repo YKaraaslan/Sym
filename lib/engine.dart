@@ -1,8 +1,6 @@
 import 'dart:io';
-import 'dart:math';
 
 import 'board.dart';
-
 import 'models/bishop.dart';
 import 'models/king.dart';
 import 'models/knight.dart';
@@ -54,7 +52,8 @@ class Engine {
     }
 
     // Check if there are no legal moves for either player
-    if (MoveGenerator().generateMoves(board, white).isEmpty && MoveGenerator().generateMoves(board, black).isEmpty) {
+    if (MoveGenerator().generateMoves(board, white).isEmpty &&
+        MoveGenerator().generateMoves(board, black).isEmpty) {
       return true;
     }
 
@@ -90,7 +89,10 @@ class Engine {
         }
       }
     }
-    if (!whiteHasPawn && !blackHasPawn && !whiteHasRookOrQueen && !blackHasRookOrQueen) {
+    if (!whiteHasPawn &&
+        !blackHasPawn &&
+        !whiteHasRookOrQueen &&
+        !blackHasRookOrQueen) {
       if (!whiteHasBishopOrKnight || !blackHasBishopOrKnight) {
         return true;
       }

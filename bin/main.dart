@@ -3,8 +3,6 @@ import 'dart:io';
 
 import 'package:sym/models/move.dart';
 import 'package:sym/move_generator.dart';
-import 'package:sym/position.dart';
-import 'package:sym/square_checker.dart';
 import 'package:sym/utils/constants.dart';
 
 void main() {

@@ -1,4 +1,4 @@
-import 'package:sym/utils/constants.dart';
+import '../utils/constants.dart';
 
 class Move {
   int row;
@@ -32,6 +32,11 @@ class Move {
     int y1 = uci.codeUnitAt(0) - 'a'.codeUnitAt(0);
     int x2 = int.parse(uci[3]) - 1;
     int y2 = uci.codeUnitAt(2) - 'a'.codeUnitAt(0);
-    return Move(row: x1, column: y1, newRow: x2, newColumn: y2, newSquare: newSquareString(x2, y2));
+    return Move(
+        row: x1,
+        column: y1,
+        newRow: x2,
+        newColumn: y2,
+        newSquare: newSquareString(x2, y2));
   }
 }

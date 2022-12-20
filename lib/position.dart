@@ -136,7 +136,9 @@ class Position {
               blackPawnStructure -= 1;
             }
           }
-          if (j > 0 && board[i][j - 1] is Pawn && board[i][j - 1]?.color == piece.color) {
+          if (j > 0 &&
+              board[i][j - 1] is Pawn &&
+              board[i][j - 1]?.color == piece.color) {
             if (piece.color == white) {
               if (i > 0) {
                 backward = true;
@@ -147,7 +149,9 @@ class Position {
               }
             }
           }
-          if (j < 7 && board[i][j + 1] is Pawn && board[i][j + 1]?.color == piece.color) {
+          if (j < 7 &&
+              board[i][j + 1] is Pawn &&
+              board[i][j + 1]?.color == piece.color) {
             if (piece.color == white) {
               if (i > 0) {
                 backward = true;
@@ -184,7 +188,8 @@ class Position {
                   continue;
                 }
                 if (i + k >= 0 && i + k < 8 && j + l >= 0 && j + l < 8) {
-                  if (board[i + k][j + l] != null && board[i + k][j + l]?.color == black) {
+                  if (board[i + k][j + l] != null &&
+                      board[i + k][j + l]?.color == black) {
                     whiteKingSafety -= 1;
                   }
                 }
@@ -200,7 +205,8 @@ class Position {
                   continue;
                 }
                 if (i + k >= 0 && i + k < 8 && j + l >= 0 && j + l < 8) {
-                  if (board[i + k][j + l] != null && board[i + k][j + l]?.color == white) {
+                  if (board[i + k][j + l] != null &&
+                      board[i + k][j + l]?.color == white) {
                     blackKingSafety -= 1;
                   }
                 }
@@ -345,7 +351,8 @@ class Position {
                 continue;
               }
               Piece? attackingPiece = board[i + k][j + l];
-              if (attackingPiece != null && attackingPiece.color != piece.color) {
+              if (attackingPiece != null &&
+                  attackingPiece.color != piece.color) {
                 attackingPieces += 1;
               }
             }
@@ -359,7 +366,8 @@ class Position {
                 continue;
               }
               Piece? defendingPiece = board[i + k][j + l];
-              if (defendingPiece != null && defendingPiece.color == piece.color) {
+              if (defendingPiece != null &&
+                  defendingPiece.color == piece.color) {
                 defendingPieces += 1;
               }
             }

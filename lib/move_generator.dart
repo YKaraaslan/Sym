@@ -1,13 +1,12 @@
 import 'dart:math';
 
-import 'package:sym/board.dart';
-import 'package:sym/square_evaluation.dart';
-
+import 'board.dart';
 import 'engine.dart';
 import 'models/king.dart';
 import 'models/move.dart';
 import 'models/node.dart';
 import 'models/piece.dart';
+import 'square_evaluation.dart';
 import 'utils/constants.dart';
 import 'utils/enums.dart';
 
