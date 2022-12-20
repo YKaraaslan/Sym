@@ -67,63 +67,113 @@ class ChessBoard {
     return pieceTypeFromSymbol[symbol.toLowerCase()];
   }
 
-  void makeMove(String moveString) {
+  void makeMove(String moveString, {bool undo = false}) {
     // Parse the UCI string and make the move on the chess board
     Move move = Move.fromUciString(moveString);
 
     if (move.isCastling) {
-      int rookx1;
-      int rooky1;
-      if (move.newRow > move.row) {
-        // Kingside castling
-        board[move.row + 1][move.column] = board[move.row + 3][move.column];
-        board[move.row + 3][move.column] = null;
-        rookx1 = move.row + 1;
-        rooky1 = move.column;
-      } else {
-        // Queenside castling
-        board[move.row - 1][move.column] = board[move.row - 4][move.column];
-        board[move.row - 4][move.column] = null;
-        rookx1 = move.row - 1;
-        rooky1 = move.column;
-      }
+      int rookRow = move.row;
+      int rookCol = (move.newColumn > move.column) ? 7 : 0;
+      Piece? rook = board[rookRow][rookCol];
+      board[rookRow][rookCol] = null;
+      int newRookCol = (move.newColumn > move.column)
+          ? move.newColumn - 1
+          : move.newColumn + 1;
+      board[rookRow][newRookCol] = rook;
+
       // Update the hasMoved property of the king and rook
-      (board[move.row][move.column] as King).hasMoved = true;
-      (board[rookx1][rooky1] as Rook).hasMoved = true;
+      if (!undo) {
+        (board[move.row][move.column] as King).hasMoved = true;
+        (board[rookRow][newRookCol] as Rook).hasMoved = true;
+      } else {
+        (board[move.row][move.column] as King).hasMoved = false;
+        (board[rookRow][newRookCol] as Rook).hasMoved = false;
+        // Undo the castling move
+        board[move.row][move.column] = board[move.newRow][move.newColumn];
+        board[move.newRow][move.newColumn] = null;
+        board[rookRow][rookCol] = rook;
+        board[rookRow][newRookCol] = null;
+      }
     } else {
       // Perform a regular move
-      board[move.newRow][move.newColumn] = board[move.row][move.column];
-      board[move.row][move.column] = null;
-
-      print('\n' * 10);
-      for (var i = board.length - 1; i >= 0; i--) {
-        var symbol = '';
-        for (var element in board[i]) {
-          symbol += '${element?.getSymbol() ?? '.'} ';
-        }
-        print(symbol);
+      if (!undo) {
+        board[move.newRow][move.newColumn] = board[move.row][move.column];
+        board[move.row][move.column] = null;
+      } else {
+        board[move.row][move.column] = board[move.newRow][move.newColumn];
+        board[move.newRow][move.newColumn] = null;
       }
-      print('\n' * 5);
+
+      if (!undo) {
+        print(moveString);
+        // print('\n' * 10);
+        // for (var i = board.length - 1; i >= 0; i--) {
+        //   var symbol = '';
+        //   for (var element in board[i]) {
+        //     symbol += '${element?.getSymbol() ?? '.'} ';
+        //   }
+        //   print(symbol);
+        // }
+        // print('\n' * 5);
+      }
     }
+
     //Check En passant
-    if (activeColor == white && move.row == 1 && move.newRow == 3) {
-      board[move.newRow][move.newColumn]?.enPassant = true;
-    } else if (activeColor == black && move.row == 6 && move.newRow == 4) {
-      board[move.newRow][move.newColumn]?.enPassant = true;
+    if (!undo) {
+      if (activeColor == white && move.row == 1 && move.newRow == 3) {
+        board[move.newRow][move.newColumn]?.enPassant = true;
+      } else if (activeColor == black && move.row == 6 && move.newRow == 4) {
+        board[move.newRow][move.newColumn]?.enPassant = true;
+      }
+    } else {
+      if (activeColor == white && move.row == 1 && move.newRow == 3) {
+        board[move.newRow][move.newColumn]?.enPassant = false;
+      } else if (activeColor == black && move.row == 6 && move.newRow == 4) {
+        board[move.newRow][move.newColumn]?.enPassant = false;
+      }
     }
+
     // Update the move numbers
     if (activeColor == white) {
-      whiteMoves++;
+      if (!undo) {
+        whiteMoves++;
+      } else {
+        whiteMoves--;
+      }
     } else {
-      blackMoves++;
+      if (!undo) {
+        blackMoves++;
+      } else {
+        blackMoves--;
+      }
     }
+
+    // Update the clocks
+    if (!undo) {
+      halfMoveClock++;
+      if (activeColor == black) {
+        fullMoveClock++;
+      }
+    } else {
+      halfMoveClock--;
+      if (activeColor == black) {
+        fullMoveClock--;
+      }
+    }
+
     // Update the active color and other internal state
     activeColor = activeColor == white ? black : white;
-    halfMoveClock++;
-    if (activeColor == black) {
-      fullMoveClock++;
+
+    if (!undo) {
+      moveHistory.add(move);
     }
-    moveHistory.add(move);
+  }
+
+  void undoMove() {
+    if (moveHistory.isNotEmpty) {
+      Move move = moveHistory.removeLast();
+      makeMove(move.toUciString(), undo: true);
+    }
   }
 
   void makeMoveForBoard(List<List<Piece?>> localBoard, String moveString) {
@@ -135,13 +185,15 @@ class ChessBoard {
       int rooky1;
       if (move.newRow > move.row) {
         // Kingside castling
-        localBoard[move.row + 1][move.column] = localBoard[move.row + 3][move.column];
+        localBoard[move.row + 1][move.column] =
+            localBoard[move.row + 3][move.column];
         localBoard[move.row + 3][move.column] = null;
         rookx1 = move.row + 1;
         rooky1 = move.column;
       } else {
         // Queenside castling
-        localBoard[move.row - 1][move.column] = localBoard[move.row - 4][move.column];
+        localBoard[move.row - 1][move.column] =
+            localBoard[move.row - 4][move.column];
         localBoard[move.row - 4][move.column] = null;
         rookx1 = move.row - 1;
         rooky1 = move.column;
@@ -151,7 +203,8 @@ class ChessBoard {
       (localBoard[rookx1][rooky1] as Rook).hasMoved = true;
     } else {
       // Perform a regular move
-      localBoard[move.newRow][move.newColumn] = localBoard[move.row][move.column];
+      localBoard[move.newRow][move.newColumn] =
+          localBoard[move.row][move.column];
       localBoard[move.row][move.column] = null;
     }
     //Check En passant

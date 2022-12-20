@@ -1,19 +1,47 @@
-import 'dart:convert';
 import 'dart:io';
 
+import 'package:sym/models/move.dart';
 import 'package:sym/move_generator.dart';
 import 'package:sym/position.dart';
+import 'package:sym/square_checker.dart';
 import 'package:sym/utils/constants.dart';
 
 void main() {
-  // Initialize the chess board
-  initBoard();
+  // Initialize the chess board to the starting position
+  chessBoard.loadPositionFromFen('8/2p5/3p4/KP5r/1R3p1k/8/4P1P1/8 w - - 1 8');
+
+  print(moveGenerationTest(1));
+
+  // for (int i = 0; i < 8; i++) {
+  //   for (int j = 0; j < 8; j++) {
+  //     if (SquareChecker().isSquareAttacked(board, i, j, black)) {
+  //       print('$i$j');
+  //     }
+  //   }
+  // }
 
   // Set up the input and output streams
-  stdin.transform(utf8.decoder).transform(LineSplitter()).listen(handleInput);
+  // stdin.transform(utf8.decoder).transform(LineSplitter()).listen(handleInput);
 
   // Send the "uci" command to the GUI to initiate the UCI communication
-  stdout.write('uci\n');
+  // stdout.write('uci\n');
+}
+
+int moveGenerationTest(int depth) {
+  if (depth == 0) {
+    return 1;
+  }
+
+  Set<Move> moves = MoveGenerator().generateMoves(board, activeColor);
+  int numberOfPositions = 0;
+
+  for (Move move in moves) {
+    chessBoard.makeMove(move.toUciString());
+    numberOfPositions += moveGenerationTest(depth - 1);
+    chessBoard.undoMove();
+  }
+
+  return numberOfPositions;
 }
 
 void handleInput(String input) {
@@ -34,7 +62,7 @@ void handleInput(String input) {
       break;
     case 'ucinewgame':
       // Reset the chess board and other internal state when starting a new game
-      initBoard();
+      chessBoard.loadPositionFromFen(startingPosition);
       break;
     case 'position':
       // Set the position on the chess board according to the FEN string or moves list
@@ -88,9 +116,4 @@ void handleInput(String input) {
       // Ignore unknown commands
       break;
   }
-}
-
-void initBoard() {
-  // Initialize the chess board to the starting position
-  chessBoard.loadPositionFromFen('r1b2knr/pp1nb2p/2p1p2p/3p1p2/qP3P2/2PPP1PB/4Q2P/1N2K1NR w K - 0 2');
 }

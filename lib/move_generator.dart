@@ -22,13 +22,10 @@ class MoveGenerator {
     // Generate a list of legal moves for the active color
     Set<Move> moves = generateMoves(board, activeColor);
 
-    for (var element in moves) {
-      print(element.toUciString());
-    }
-
     var heatMap = SquareEvaluation().createHeatMap(activeColor);
     var moveList = moves.toList();
-    moveList.sort((a, b) => heatMap[b.newRow][b.newColumn] - heatMap[a.newRow][a.newColumn]);
+    moveList.sort((a, b) =>
+        heatMap[b.newRow][b.newColumn] - heatMap[a.newRow][a.newColumn]);
     moves = moveList.toSet();
     // Choose a move using some strategy, such as minimax with alpha-beta pruning
     Move move = chooseMove(board, moves);
@@ -46,7 +43,11 @@ class MoveGenerator {
     Move? bestMove;
     double maxScore = double.negativeInfinity;
     for (Node child in root.children) {
-      double score = minimax(child, depth: 10, alpha: double.negativeInfinity, beta: double.infinity, maximizingPlayer: false);
+      double score = minimax(child,
+          depth: iteration,
+          alpha: double.negativeInfinity,
+          beta: double.infinity,
+          maximizingPlayer: false);
       if (score > maxScore) {
         bestMove = child.move;
         maxScore = score;
@@ -78,7 +79,11 @@ class MoveGenerator {
     }
   }
 
-  double minimax(Node node, {int depth = 4, double alpha = double.negativeInfinity, double beta = double.infinity, bool maximizingPlayer = true}) {
+  double minimax(Node node,
+      {int depth = 4,
+      double alpha = double.negativeInfinity,
+      double beta = double.infinity,
+      bool maximizingPlayer = true}) {
     // Check if the node is a leaf or the depth limit has been reached
     if (node.isLeaf() || depth == 0) {
       return node.evaluate();
@@ -88,7 +93,13 @@ class MoveGenerator {
       // Maximizing player: find the maximum score
       double value = double.negativeInfinity;
       for (Node child in node.children) {
-        value = max(value, minimax(child, depth: depth - 1, alpha: alpha, beta: beta, maximizingPlayer: false));
+        value = max(
+            value,
+            minimax(child,
+                depth: depth - 1,
+                alpha: alpha,
+                beta: beta,
+                maximizingPlayer: false));
         alpha = max(alpha, value);
         if (beta <= alpha) {
           // Prune the remaining branches
@@ -100,7 +111,13 @@ class MoveGenerator {
       // Minimizing player: find the minimum score
       double value = double.infinity;
       for (Node child in node.children) {
-        value = min(value, minimax(child, depth: depth - 1, alpha: alpha, beta: beta, maximizingPlayer: true));
+        value = min(
+            value,
+            minimax(child,
+                depth: depth - 1,
+                alpha: alpha,
+                beta: beta,
+                maximizingPlayer: true));
         beta = min(beta, value);
         if (beta <= alpha) {
           // Prune the remaining branches
@@ -193,7 +210,8 @@ class MoveGenerator {
     return moves;
   }
 
-  Set<Move> filterMoves(List<List<Piece?>> board, Set<Move> moves, PieceColor activeColor) {
+  Set<Move> filterMoves(
+      List<List<Piece?>> board, Set<Move> moves, PieceColor activeColor) {
     Set<Move> validMoves = {};
 
     for (Move move in moves.toList()) {
