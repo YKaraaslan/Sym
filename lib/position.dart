@@ -11,6 +11,8 @@ import 'utils/constants.dart';
 
 class Position {
   int evaluatePosition(List<List<Piece?>> board) {
+    int evaluation = 0;
+
     // Calculate the material value for each color
     int whiteMaterialValue = 0;
     int blackMaterialValue = 0;
@@ -19,34 +21,41 @@ class Position {
         Piece? piece = board[i][j];
         if (piece != null && piece.color == white) {
           if (piece is Pawn) {
-            whiteMaterialValue += 1;
+            whiteMaterialValue += 100;
           }
-          if (piece is Knight || piece is Bishop) {
-            whiteMaterialValue += 3;
+          if (piece is Knight) {
+            whiteMaterialValue += 320;
+          }
+          if (piece is Bishop) {
+            whiteMaterialValue += 330;
           }
           if (piece is Rook) {
-            whiteMaterialValue += 5;
+            whiteMaterialValue += 500;
           }
           if (piece is Queen) {
-            whiteMaterialValue += 9;
+            whiteMaterialValue += 900;
           }
         }
         if (piece != null && piece.color == black) {
           if (piece is Pawn) {
-            blackMaterialValue += 1;
+            blackMaterialValue += 100;
           }
-          if (piece is Knight || piece is Bishop) {
-            blackMaterialValue += 3;
+          if (piece is Knight) {
+            blackMaterialValue += 320;
+          }
+          if (piece is Bishop) {
+            blackMaterialValue += 330;
           }
           if (piece is Rook) {
-            blackMaterialValue += 5;
+            blackMaterialValue += 500;
           }
           if (piece is Queen) {
-            blackMaterialValue += 9;
+            blackMaterialValue += 900;
           }
         }
       }
     }
+    evaluation += whiteMaterialValue - blackMaterialValue;
 
     // Calculate the material balance for each color
     int whiteMaterial = 0;
@@ -63,6 +72,7 @@ class Position {
         }
       }
     }
+    evaluation += whiteMaterial - blackMaterial;
 
     // Calculate the mobility for each color
     int whiteMobility = 0;
@@ -98,6 +108,8 @@ class Position {
         }
       }
     }
+    evaluation += whiteDevelopment - blackDevelopment;
+    evaluation += whiteMobility - blackMobility;
 
     // Calculate the pawn structure for each color
     int whitePawnStructure = 0;
@@ -156,6 +168,7 @@ class Position {
         }
       }
     }
+    evaluation += whitePawnStructure - blackPawnStructure;
 
     // Calculate the king safety for each color
     int whiteKingSafety = 0;
@@ -197,6 +210,7 @@ class Position {
         }
       }
     }
+    evaluation += whiteKingSafety - blackKingSafety;
 
     // Calculate control of the center
     int whiteCenterControl = 0;
@@ -212,6 +226,7 @@ class Position {
         }
       }
     }
+    evaluation += whiteCenterControl - blackCenterControl;
 
     // Calculate piece coordination
     int whitePieceCoordination = 0;
@@ -237,6 +252,7 @@ class Position {
         }
       }
     }
+    evaluation += whitePieceCoordination - blackPieceCoordination;
 
     // Calculate piece activity
     int whitePieceActivity = 0;
@@ -254,6 +270,7 @@ class Position {
         }
       }
     }
+    evaluation += whitePieceActivity - blackPieceActivity;
 
     // Calculate space
     int whiteSpace = 0;
@@ -269,6 +286,7 @@ class Position {
         }
       }
     }
+    evaluation += whiteSpace - blackSpace;
 
     // Determine the square of the white king
     String whiteKingSquare = '';
@@ -312,48 +330,69 @@ class Position {
         }
       }
     }
+    evaluation += (whiteAttack + whiteDefense) - (blackAttack + blackDefense);
 
-    // Calculate tempo
-    int tempo = 0;
-    if (activeColor == white) {
-      tempo = 1;
-    } else {
-      tempo = -1;
+    // Safety of pieces heuristic
+    for (int i = 0; i < 8; i++) {
+      for (int j = 0; j < 8; j++) {
+        Piece? piece = board[i][j];
+        if (piece != null) {
+          // Calculate the number of attacking pieces
+          int attackingPieces = 0;
+          for (int k = -1; k <= 1; k++) {
+            for (int l = -1; l <= 1; l++) {
+              if (i + k < 0 || i + k > 7 || j + l < 0 || j + l > 7) {
+                continue;
+              }
+              Piece? attackingPiece = board[i + k][j + l];
+              if (attackingPiece != null && attackingPiece.color != piece.color) {
+                attackingPieces += 1;
+              }
+            }
+          }
+
+          // Calculate the number of defending pieces
+          int defendingPieces = 0;
+          for (int k = -1; k <= 1; k++) {
+            for (int l = -1; l <= 1; l++) {
+              if (i + k < 0 || i + k > 7 || j + l < 0 || j + l > 7) {
+                continue;
+              }
+              Piece? defendingPiece = board[i + k][j + l];
+              if (defendingPiece != null && defendingPiece.color == piece.color) {
+                defendingPieces += 1;
+              }
+            }
+          }
+
+          // Adjust the evaluation based on the safety of the piece
+          if (defendingPieces > attackingPieces) {
+            // Piece is well defended
+            if (piece.color == white) {
+              evaluation += 1;
+            } else {
+              evaluation -= 1;
+            }
+          } else if (attackingPieces > defendingPieces) {
+            // Piece is in danger
+            if (piece.color == white) {
+              evaluation -= 1;
+            } else {
+              evaluation += 1;
+            }
+          }
+        }
+      }
     }
 
-    // Calculate the total evaluation for each color
-    int whiteEvaluation = whiteMaterialValue +
-        whiteMaterial +
-        whiteMobility +
-        whiteDevelopment +
-        whitePawnStructure +
-        whiteKingSafety +
-        whiteCenterControl +
-        whitePieceCoordination +
-        whitePieceActivity +
-        whiteSpace +
-        whiteAttack +
-        whiteDefense +
-        tempo;
-    int blackEvaluation = blackMaterialValue +
-        blackMaterial +
-        blackMobility +
-        blackDevelopment +
-        blackPawnStructure +
-        blackKingSafety +
-        blackCenterControl +
-        blackPieceCoordination +
-        blackPieceActivity +
-        blackSpace +
-        blackAttack +
-        blackDefense +
-        tempo;
+    // Bonus for first move
+    if (activeColor == white) {
+      evaluation += 10;
+    } else {
+      evaluation -= 10;
+    }
 
     // Return the evaluation for the active color
-    if (activeColor == white) {
-      return whiteEvaluation - blackEvaluation;
-    } else {
-      return blackEvaluation - whiteEvaluation;
-    }
+    return evaluation;
   }
 }

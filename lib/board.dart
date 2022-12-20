@@ -94,12 +94,28 @@ class ChessBoard {
       // Perform a regular move
       board[move.newRow][move.newColumn] = board[move.row][move.column];
       board[move.row][move.column] = null;
+
+      print('\n' * 10);
+      for (var i = board.length - 1; i >= 0; i--) {
+        var symbol = '';
+        for (var element in board[i]) {
+          symbol += '${element?.getSymbol() ?? '.'} ';
+        }
+        print(symbol);
+      }
+      print('\n' * 5);
     }
     //Check En passant
     if (activeColor == white && move.row == 1 && move.newRow == 3) {
       board[move.newRow][move.newColumn]?.enPassant = true;
     } else if (activeColor == black && move.row == 6 && move.newRow == 4) {
       board[move.newRow][move.newColumn]?.enPassant = true;
+    }
+    // Update the move numbers
+    if (activeColor == white) {
+      whiteMoves++;
+    } else {
+      blackMoves++;
     }
     // Update the active color and other internal state
     activeColor = activeColor == white ? black : white;

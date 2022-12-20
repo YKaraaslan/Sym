@@ -41,3 +41,7 @@ int maxValue = 2147483647;
 List<Move> moveHistory = [];
 
 String newSquareString(int x, int y) => files[y] + (x + 1).toString();
+int iteration = 100;
+
+int whiteMoves = 0;
+int blackMoves = 0;

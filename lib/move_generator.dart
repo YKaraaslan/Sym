@@ -1,12 +1,13 @@
 import 'dart:math';
 
 import 'package:sym/board.dart';
+import 'package:sym/square_evaluation.dart';
 
 import 'engine.dart';
 import 'models/king.dart';
 import 'models/move.dart';
+import 'models/node.dart';
 import 'models/piece.dart';
-import 'position.dart';
 import 'utils/constants.dart';
 import 'utils/enums.dart';
 
@@ -21,6 +22,14 @@ class MoveGenerator {
     // Generate a list of legal moves for the active color
     Set<Move> moves = generateMoves(board, activeColor);
 
+    for (var element in moves) {
+      print(element.toUciString());
+    }
+
+    var heatMap = SquareEvaluation().createHeatMap(activeColor);
+    var moveList = moves.toList();
+    moveList.sort((a, b) => heatMap[b.newRow][b.newColumn] - heatMap[a.newRow][a.newColumn]);
+    moves = moveList.toSet();
     // Choose a move using some strategy, such as minimax with alpha-beta pruning
     Move move = chooseMove(board, moves);
 
@@ -28,69 +37,78 @@ class MoveGenerator {
   }
 
   Move chooseMove(List<List<Piece?>> board, Set<Move> moves) {
-    int bestValue = -9999;
+    // Create a root node for the MCTS tree
+    Node root = Node(board, moves);
+
+    mcts(root);
+
+    // Use minimax with alpha-beta pruning to evaluate the strength of each move
     Move? bestMove;
-
-    for (Move move in moves) {
-      // Make a copy of the board and perform the move
-      List<List<Piece?>> copy = deepCopyBoard(board);
-      copy[move.newRow][move.newColumn] = copy[move.row][move.column];
-      copy[move.row][move.column] = null;
-
-      // Evaluate the position using the evaluatePosition function
-      int value = Position().evaluatePosition(copy);
-      if (value > bestValue) {
-        bestValue = value;
-        bestMove = move;
+    double maxScore = double.negativeInfinity;
+    for (Node child in root.children) {
+      double score = minimax(child, depth: 10, alpha: double.negativeInfinity, beta: double.infinity, maximizingPlayer: false);
+      if (score > maxScore) {
+        bestMove = child.move;
+        maxScore = score;
       }
     }
 
-    return bestMove!;
+    // If no move was found, choose a random move
+    return bestMove ?? moves.elementAt(Random().nextInt(moves.length));
   }
 
-  int minimax(List<List<Piece?>> board, int depth, int alpha, int beta, PieceColor color) {
-    // Check if the depth limit has been reached or the game is in an end state
-    if (depth == 0 || isEndGame(board)) {
-      return Position().evaluatePosition(board);
+  void mcts(Node root) {
+    for (int i = 0; i < iteration; i++) {
+      // Selection
+      Node current = root;
+      while (!current.isLeaf()) {
+        current = current.select();
+      }
+
+      // Expansion
+      if (!current.isFullyExpanded()) {
+        current = current.expand();
+      }
+
+      // Simulation
+      double result = current.simulate();
+
+      // Backpropagation
+      current.backpropagate(result);
+    }
+  }
+
+  double minimax(Node node, {int depth = 4, double alpha = double.negativeInfinity, double beta = double.infinity, bool maximizingPlayer = true}) {
+    // Check if the node is a leaf or the depth limit has been reached
+    if (node.isLeaf() || depth == 0) {
+      return node.evaluate();
     }
 
-    // Initialize the best value based on the player's color
-    int bestValue = (color == white) ? minValue : maxValue;
-
-    // Generate a list of all legal moves for the current player
-    Set<Move> moves = generateMoves(board, color);
-
-    // Iterate over the list of moves
-    for (Move move in moves) {
-      // Make the move on a copy of the board
-      List<List<Piece?>> copy = deepCopyBoard(board);
-      copy[move.newRow][move.newColumn] = copy[move.row][move.column];
-      copy[move.row][move.column] = null;
-
-      // Recursively call the minimax function on the copy of the board
-      int value = minimax(copy, depth - 1, alpha, beta, color == white ? black : white);
-
-      // Update the best value based on the value returned from the recursive call
-      if (color == white) {
-        bestValue = max(bestValue, value);
+    if (maximizingPlayer) {
+      // Maximizing player: find the maximum score
+      double value = double.negativeInfinity;
+      for (Node child in node.children) {
+        value = max(value, minimax(child, depth: depth - 1, alpha: alpha, beta: beta, maximizingPlayer: false));
         alpha = max(alpha, value);
-      } else {
-        bestValue = min(bestValue, value);
+        if (beta <= alpha) {
+          // Prune the remaining branches
+          break;
+        }
+      }
+      return value;
+    } else {
+      // Minimizing player: find the minimum score
+      double value = double.infinity;
+      for (Node child in node.children) {
+        value = min(value, minimax(child, depth: depth - 1, alpha: alpha, beta: beta, maximizingPlayer: true));
         beta = min(beta, value);
+        if (beta <= alpha) {
+          // Prune the remaining branches
+          break;
+        }
       }
-
-      // If alpha-beta pruning is enabled, check if the current value exceeds beta for the minimizing player
-      // or is less than alpha for the maximizing player. If so, return the best value found so far and exit the loop.
-      if (alpha >= beta) {
-        break;
-      }
+      return value;
     }
-
-    return bestValue;
-  }
-
-  PieceColor oppositecolor(PieceColor color) {
-    return color == white ? black : white;
   }
 
   bool isEndGame(List<List<Piece?>> board) {
@@ -159,9 +177,9 @@ class MoveGenerator {
     for (int i = 0; i < 8; i++) {
       for (int j = 0; j < 8; j++) {
         Piece? piece = board[i][j];
-        if (piece?.color == color) {
+        if (piece != null && piece.color == color) {
           // Generate a list of valid moves for the current piece
-          Set<Move> validMoves = piece!.generateMoves(board);
+          Set<Move> validMoves = piece.generateMoves(board);
 
           // Filter the list of moves to only include legal moves
           validMoves = filterMoves(board, validMoves, color);

@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:sym/move_generator.dart';
+import 'package:sym/position.dart';
 import 'package:sym/utils/constants.dart';
 
 void main() {
@@ -75,15 +76,13 @@ void handleInput(String input) {
     case 'move':
       if (tokens[1].length != 4) break;
       chessBoard.makeMove(tokens[1]);
-      print('\n' * 10);
-      for (var i = board.length - 1; i >= 0; i--) {
-        var symbol = '';
-        for (var element in board[i]) {
-          symbol += '${element?.getSymbol() ?? '.'} ';
-        }
-        print(symbol);
-      }
-      print('\n' * 5);
+      break;
+    case 'eval':
+      print(Position().evaluatePosition(board));
+      break;
+    case 'change':
+      activeColor = activeColor == white ? black : white;
+      print(activeColor);
       break;
     default:
       // Ignore unknown commands
@@ -93,5 +92,5 @@ void handleInput(String input) {
 
 void initBoard() {
   // Initialize the chess board to the starting position
-  chessBoard.loadPositionFromFen(startingPosition);
+  chessBoard.loadPositionFromFen('r1b2knr/pp1nb2p/2p1p2p/3p1p2/qP3P2/2PPP1PB/4Q2P/1N2K1NR w K - 0 2');
 }

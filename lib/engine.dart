@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:math';
 
 import 'board.dart';
@@ -18,16 +19,8 @@ class Engine {
   void simulateChessGame() {
     // Simulate the game until it is over
     while (!MoveGenerator().isEndGame(board)) {
-      // Generate a list of all legal moves for the current player
-      Set<Move> moves = MoveGenerator().generateMoves(board, activeColor);
-
-      // Choose a random move from the list of legal moves
-      Random random = Random();
-      int index = random.nextInt(moves.length);
-      Move move = moves.elementAt(index);
-
       // Make the move on the chess board
-      ChessBoard().makeMove(move.toUciString());
+      ChessBoard().makeMove(MoveGenerator().generateMove(board));
 
       // Check if the game is over (i.e., there is a winner or the game is a draw)
       if (MoveGenerator().isEndGame(board)) {
@@ -35,7 +28,7 @@ class Engine {
       }
 
       // Switch the current player
-      activeColor = (activeColor == white) ? black : white;
+      sleep(Duration(milliseconds: 250));
     }
 
     // Announce the winner or declare the game a draw
@@ -146,7 +139,7 @@ class Engine {
     for (int i = 0; i < 8; i++) {
       for (int j = 0; j < 8; j++) {
         Piece? piece = board[i][j];
-        if (piece is King && piece.color == kingColor) {
+        if (piece != null && piece is King && piece.color == kingColor) {
           kingSquare = newSquareString(i, j);
           break;
         }
@@ -176,7 +169,7 @@ class Engine {
     for (int i = 0; i < 8; i++) {
       for (int j = 0; j < 8; j++) {
         Piece? piece = board[i][j];
-        if (piece is King && piece.color == color) {
+        if (piece != null && piece is King && piece.color == color) {
           king = piece;
         }
       }
@@ -191,6 +184,18 @@ class Engine {
 
   // Put the king back on the board
   void putKingBack(List<List<Piece?>> board, King king) {
-    board[king.x][king.y] = king;
+    var isFound = false;
+    for (int i = 0; i < 8; i++) {
+      for (int j = 0; j < 8; j++) {
+        Piece? piece = board[i][j];
+        if (piece != null && piece is King && piece.color == king.color) {
+          isFound = true;
+          break;
+        }
+      }
+    }
+    if (!isFound) {
+      board[king.x][king.y] = king;
+    }
   }
 }
