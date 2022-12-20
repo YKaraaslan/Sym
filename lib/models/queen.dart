@@ -4,7 +4,7 @@ import 'move.dart';
 import 'piece.dart';
 
 class Queen extends Piece {
-  Queen(int x, int y, PieceColor color) : super(x, y, color);
+  Queen(int x, int y, PieceColor color, int value) : super(x, y, color, value);
 
   @override
   Set<Move> generateMoves(List<List<Piece?>> board) {
@@ -38,11 +38,21 @@ class Queen extends Piece {
 
   @override
   Queen copy() {
-    return Queen(x, y, color);
+    return Queen(x, y, color, value);
   }
 
   @override
   String getSymbol() {
     return color == white ? 'Q' : 'q';
+  }
+
+  @override
+  int getControl(List<List<Piece?>> board) {
+    Set<Move> control = {};
+    Set<Move> moves = generateMoves(board);
+    for (Move move in moves) {
+      control.add(move);
+    }
+    return control.length;
   }
 }

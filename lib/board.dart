@@ -11,8 +11,7 @@ import 'utils/extensions.dart';
 
 // Represents a chess board with pieces
 class ChessBoard {
-  List<List<Piece?>> board =
-      List.generate(8, (_) => List.generate(8, (index) => null));
+  List<List<Piece?>> board = List.generate(8, (_) => List.generate(8, (index) => null));
 
   // A helper function to parse a FEN string and populate the chess board
   void loadPositionFromFen(String fen) {
@@ -59,12 +58,12 @@ class ChessBoard {
   Piece? getPiece(String symbol, int x, int y) {
     PieceColor color = symbol.isUpperCase() ? white : black;
     var pieceTypeFromSymbol = {
-      'k': King(x, y, color),
-      'p': Pawn(x, y, color),
-      'n': Knight(x, y, color),
-      'b': Bishop(x, y, color),
-      'r': Rook(x, y, color),
-      'q': Queen(x, y, color),
+      'k': King(x, y, color, maxValue),
+      'p': Pawn(x, y, color, 1),
+      'n': Knight(x, y, color, 3),
+      'b': Bishop(x, y, color, 3),
+      'r': Rook(x, y, color, 5),
+      'q': Queen(x, y, color, 9),
     };
     return pieceTypeFromSymbol[symbol.toLowerCase()];
   }

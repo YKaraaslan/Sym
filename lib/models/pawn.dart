@@ -4,7 +4,7 @@ import 'move.dart';
 import 'piece.dart';
 
 class Pawn extends Piece {
-  Pawn(int x, int y, PieceColor color) : super(x, y, color);
+  Pawn(int x, int y, PieceColor color, int value) : super(x, y, color, value);
 
   @override
   Set<Move> generateMoves(List<List<Piece?>> board) {
@@ -71,11 +71,21 @@ class Pawn extends Piece {
 
   @override
   Pawn copy() {
-    return Pawn(x, y, color);
+    return Pawn(x, y, color, value);
   }
 
   @override
   String getSymbol() {
     return color == white ? 'P' : 'p';
+  }
+
+  @override
+  int getControl(List<List<Piece?>> board) {
+    Set<Move> control = {};
+    Set<Move> moves = generateMoves(board);
+    for (Move move in moves) {
+      control.add(move);
+    }
+    return control.length;
   }
 }

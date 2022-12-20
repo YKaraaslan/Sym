@@ -6,7 +6,7 @@ import 'piece.dart';
 import 'rook.dart';
 
 class King extends Piece {
-  King(int x, int y, PieceColor color) : super(x, y, color);
+  King(int x, int y, PieceColor color, int value) : super(x, y, color, value);
 
   @override
   Set<Move> generateMoves(List<List<Piece?>> board) {
@@ -35,48 +35,28 @@ class King extends Piece {
     if (!hasMoved) {
       if (color == white) {
         // Check for kingside castling
-        if (board[0][5] == null &&
-            board[0][6] == null &&
-            board[0][7] is Rook &&
-            !(board[0][7]?.hasMoved ?? true)) {
-          if (!isSquareAttacked(board, 0, 5) &&
-              !isSquareAttacked(board, 0, 6)) {
+        if (board[0][5] == null && board[0][6] == null && board[0][7] is Rook && !(board[0][7]?.hasMoved ?? true)) {
+          if (!isSquareAttacked(board, 0, 5) && !isSquareAttacked(board, 0, 6)) {
             moves.add(Move(0, 4, 0, 6, isCastling: true));
           }
         } else {
           // Check for queenside castling
-          if (board[0][1] == null &&
-              board[0][2] == null &&
-              board[0][3] == null &&
-              board[0][0] is Rook &&
-              !(board[0][0]?.hasMoved ?? true)) {
-            if (!isSquareAttacked(board, 0, 1) &&
-                !isSquareAttacked(board, 0, 2) &&
-                !isSquareAttacked(board, 0, 3)) {
+          if (board[0][1] == null && board[0][2] == null && board[0][3] == null && board[0][0] is Rook && !(board[0][0]?.hasMoved ?? true)) {
+            if (!isSquareAttacked(board, 0, 1) && !isSquareAttacked(board, 0, 2) && !isSquareAttacked(board, 0, 3)) {
               moves.add(Move(0, 4, 0, 2, isCastling: true));
             }
           }
         }
       } else {
         // Check for kingside castling
-        if (board[7][5] == null &&
-            board[7][6] == null &&
-            board[7][7] is Rook &&
-            !(board[7][7]?.hasMoved ?? true)) {
-          if (!isSquareAttacked(board, 7, 5) &&
-              !isSquareAttacked(board, 7, 6)) {
+        if (board[7][5] == null && board[7][6] == null && board[7][7] is Rook && !(board[7][7]?.hasMoved ?? true)) {
+          if (!isSquareAttacked(board, 7, 5) && !isSquareAttacked(board, 7, 6)) {
             moves.add(Move(7, 4, 7, 6, isCastling: true));
           }
         } else {
           // Check for queenside castling
-          if (board[7][1] == null &&
-              board[7][2] == null &&
-              board[7][3] == null &&
-              board[7][0] is Rook &&
-              !(board[7][0]?.hasMoved ?? true)) {
-            if (!isSquareAttacked(board, 7, 1) &&
-                !isSquareAttacked(board, 7, 2) &&
-                !isSquareAttacked(board, 7, 3)) {
+          if (board[7][1] == null && board[7][2] == null && board[7][3] == null && board[7][0] is Rook && !(board[7][0]?.hasMoved ?? true)) {
+            if (!isSquareAttacked(board, 7, 1) && !isSquareAttacked(board, 7, 2) && !isSquareAttacked(board, 7, 3)) {
               moves.add(Move(7, 4, 7, 2, isCastling: true));
             }
           }
@@ -88,17 +68,26 @@ class King extends Piece {
   }
 
   bool isSquareAttacked(List<List<Piece?>> board, int col, int row) {
-    return SquareChecker()
-        .isSquareAttacked(board, row, col, color == white ? black : white);
+    return SquareChecker().isSquareAttacked(board, row, col, color == white ? black : white);
   }
 
   @override
   King copy() {
-    return King(x, y, color);
+    return King(x, y, color, value);
   }
 
   @override
   String getSymbol() {
     return color == white ? 'K' : 'k';
+  }
+
+  @override
+  int getControl(List<List<Piece?>> board) {
+    Set<Move> control = {};
+    Set<Move> moves = generateMoves(board);
+    for (Move move in moves) {
+      control.add(move);
+    }
+    return control.length;
   }
 }

@@ -1,14 +1,11 @@
 import 'dart:math';
 
 import 'engine.dart';
-import 'models/bishop.dart';
 import 'models/king.dart';
-import 'models/knight.dart';
 import 'models/move.dart';
-import 'models/pawn.dart';
 import 'models/piece.dart';
-import 'models/queen.dart';
 import 'models/rook.dart';
+import 'position.dart';
 import 'utils/constants.dart';
 import 'utils/enums.dart';
 
@@ -82,8 +79,8 @@ class MoveGenerator {
       copy[move.newRow][move.newColumn] = copy[move.row][move.column];
       copy[move.row][move.column] = null;
 
-      // Evaluate the position using the minimax function
-      int value = minimax(copy, 4, -10000, 10000, activeColor);
+      // Evaluate the position using the evaluatePosition function
+      int value = Position().evaluatePosition(copy);
       if (value > bestValue) {
         bestValue = value;
         bestMove = move;
@@ -93,11 +90,10 @@ class MoveGenerator {
     return bestMove!;
   }
 
-  int minimax(List<List<Piece?>> board, int depth, int alpha, int beta,
-      PieceColor color) {
+  int minimax(List<List<Piece?>> board, int depth, int alpha, int beta, PieceColor color) {
     // Check if the depth limit has been reached or the game is in an end state
     if (depth == 0 || isEndGame(board)) {
-      return evaluatePosition(board);
+      return Position().evaluatePosition(board);
     }
 
     // Initialize the best value based on the player's color
@@ -114,8 +110,7 @@ class MoveGenerator {
       copy[move.row][move.column] = null;
 
       // Recursively call the minimax function on the copy of the board
-      int value =
-          minimax(copy, depth - 1, alpha, beta, color == white ? black : white);
+      int value = minimax(copy, depth - 1, alpha, beta, color == white ? black : white);
 
       // Update the best value based on the value returned from the recursive call
       if (color == white) {
@@ -199,51 +194,6 @@ class MoveGenerator {
     return false;
   }
 
-  int evaluatePosition(List<List<Piece?>> board) {
-    int value = 0;
-
-    // Evaluate the value of each piece on the board
-    for (int i = 0; i < 8; i++) {
-      for (int j = 0; j < 8; j++) {
-        Piece? piece = board[i][j];
-        int pieceValue = 0;
-        switch (piece?.runtimeType) {
-          case Pawn:
-            pieceValue = 10;
-            break;
-          case Knight:
-            pieceValue = 30;
-            break;
-          case Bishop:
-            pieceValue = 30;
-            break;
-          case Rook:
-            pieceValue = 50;
-            break;
-          case Queen:
-            pieceValue = 90;
-            break;
-          case King:
-            pieceValue = 900;
-            break;
-        }
-        value += piece?.color == white ? pieceValue : -pieceValue;
-      }
-    }
-
-    // Evaluate the mobility of each color
-    Set<Move> whiteMoves = generateMoves(board, white);
-    // whiteMoves = filterMoves(whiteMoves);
-    int whiteMobility = whiteMoves.length;
-    Set<Move> blackMoves = generateMoves(board, black);
-    // blackMoves = filterMoves(blackMoves);
-    int blackMobility = blackMoves.length;
-    value += (whiteMobility - blackMobility) * 5;
-
-    // Return the evaluated value
-    return value;
-  }
-
   Set<Move> generateMoves(List<List<Piece?>> board, PieceColor color) {
     Set<Move> moves = {};
 
@@ -267,8 +217,7 @@ class MoveGenerator {
     return moves;
   }
 
-  Set<Move> filterMoves(
-      List<List<Piece?>> board, Set<Move> moves, PieceColor activeColor) {
+  Set<Move> filterMoves(List<List<Piece?>> board, Set<Move> moves, PieceColor activeColor) {
     Set<Move> validMoves = {};
 
     for (Move move in moves) {

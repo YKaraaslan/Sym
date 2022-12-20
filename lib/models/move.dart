@@ -6,8 +6,7 @@ class Move {
   bool isCastling;
   bool isEnPassant;
 
-  Move(this.row, this.column, this.newRow, this.newColumn,
-      {this.isCastling = false, this.isEnPassant = false});
+  Move(this.row, this.column, this.newRow, this.newColumn, {this.isCastling = false, this.isEnPassant = false});
 
   String toUciString() {
     String file1 = String.fromCharCode(column + 'a'.codeUnitAt(0));
