@@ -13,13 +13,13 @@ class Pawn extends Piece {
     // Pawns can move forward one square if the square is unoccupied
     int forward = color == white ? 1 : -1;
     if (board[x + forward][y] == null) {
-      moves.add(Move(x, y, x + forward, y));
+      moves.add(Move(row: x, column: y, newRow: x + forward, newColumn: y, newSquare: newSquareString(x + forward, y)));
     }
 
     // Pawns can move forward two squares if they are on their starting rank and the squares are unoccupied
     if ((color == white && x == 1) || (color == black && x == 6)) {
       if (board[x + forward][y] == null && board[x + 2 * forward][y] == null) {
-        moves.add(Move(x, y, x + 2 * forward, y));
+        moves.add(Move(row: x, column: y, newRow: x + 2 * forward, newColumn: y, newSquare: newSquareString(x + 2 * forward, y)));
       }
     }
 
@@ -29,40 +29,28 @@ class Pawn extends Piece {
       if (newColumn >= 0 && newColumn < 8) {
         Piece? target = board[x + forward][newColumn];
         if (target != null && target.color != color) {
-          moves.add(Move(x, y, x + forward, newColumn));
+          moves.add(Move(row: x, column: y, newRow: x + forward, newColumn: newColumn, newSquare: newSquareString(x + forward, y)));
         }
       }
     }
 
     if (color == white && x == 4) {
       // Check for en passant capture to the left
-      if (y > 0 &&
-          board[x][y - 1] is Pawn &&
-          board[x][y - 1]?.color == black &&
-          (board[x][y - 1]?.enPassant ?? false)) {
-        moves.add(Move(x, y, x + 1, y - 1, isEnPassant: true));
+      if (y > 0 && board[x][y - 1] is Pawn && board[x][y - 1]?.color == black && (board[x][y - 1]?.enPassant ?? false)) {
+        moves.add(Move(row: x, column: y, newRow: x + 1, newColumn: y - 1, isEnPassant: true, newSquare: newSquareString(x + forward, y - 1)));
       }
       // Check for en passant capture to the right
-      if (y > 0 &&
-          board[x][y + 1] is Pawn &&
-          board[x][y + 1]?.color == black &&
-          (board[x][y + 1]?.enPassant ?? false)) {
-        moves.add(Move(x, y, x + 1, y + 1, isEnPassant: true));
+      if (y < 7 && board[x][y + 1] is Pawn && board[x][y + 1]?.color == black && (board[x][y + 1]?.enPassant ?? false)) {
+        moves.add(Move(row: x, column: y, newRow: x + 1, newColumn: y + 1, isEnPassant: true, newSquare: newSquareString(x + forward, y + 1)));
       }
     } else if (color == black && x == 3) {
       // Check for en passant capture to the left
-      if (y < 7 &&
-          board[x][y - 1] is Pawn &&
-          board[x][y - 1]?.color == white &&
-          (board[x][y - 1]?.enPassant ?? false)) {
-        moves.add(Move(x, y, x - 1, y - 1, isEnPassant: true));
+      if (y > 0 && board[x][y - 1] is Pawn && board[x][y - 1]?.color == white && (board[x][y - 1]?.enPassant ?? false)) {
+        moves.add(Move(row: x, column: y, newRow: x - 1, newColumn: y - 1, isEnPassant: true, newSquare: newSquareString(x + forward, y - 1)));
       }
       // Check for en passant capture to the right
-      if (y < 7 &&
-          board[x][y + 1] is Pawn &&
-          board[x][y + 1]?.color == white &&
-          (board[x][y + 1]?.enPassant ?? false)) {
-        moves.add(Move(x, y, x - 1, y + 1, isEnPassant: true));
+      if (y < 7 && board[x][y + 1] is Pawn && board[x][y + 1]?.color == white && (board[x][y + 1]?.enPassant ?? false)) {
+        moves.add(Move(row: x, column: y, newRow: x - 1, newColumn: y + 1, isEnPassant: true, newSquare: newSquareString(x + forward, y + 1)));
       }
     }
 
@@ -80,12 +68,12 @@ class Pawn extends Piece {
   }
 
   @override
-  int getControl(List<List<Piece?>> board) {
-    Set<Move> control = {};
+  Set<String> getControl(List<List<Piece?>> board) {
+    Set<String> control = {};
     Set<Move> moves = generateMoves(board);
     for (Move move in moves) {
-      control.add(move);
+      control.add(move.newSquare);
     }
-    return control.length;
+    return control;
   }
 }

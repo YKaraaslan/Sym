@@ -47,19 +47,19 @@ void handleInput(String input) {
         for (int i = tokens.length - 1; i < tokens.length; i++) {
           String move = tokens[i];
           // Make the move on the chess board and update the internal state
-          MoveGenerator().makeMove(chessBoard.board, move);
+          chessBoard.makeMove(board, move);
         }
       }
       break;
     case 'go':
       // Generate and make a move, and send it to the GUI
-      String move = MoveGenerator().generateMove(chessBoard.board);
-      MoveGenerator().makeMove(chessBoard.board, move);
+      String move = MoveGenerator().generateMove(board);
+      chessBoard.makeMove(board, move);
       stdout.write('bestmove $move\n');
       print('\n' * 10);
-      for (var i = chessBoard.board.length - 1; i >= 0; i--) {
+      for (var i = board.length - 1; i >= 0; i--) {
         var symbol = '';
-        for (var element in chessBoard.board[i]) {
+        for (var element in board[i]) {
           symbol += '${element?.getSymbol() ?? '.'} ';
         }
         print(symbol);
@@ -72,6 +72,19 @@ void handleInput(String input) {
     case 'quit':
       // Terminate the program when receiving the "quit" command
       exit(0);
+    case 'move':
+      if (tokens[1].length != 4) break;
+      chessBoard.makeMove(board, tokens[1]);
+      print('\n' * 10);
+      for (var i = board.length - 1; i >= 0; i--) {
+        var symbol = '';
+        for (var element in board[i]) {
+          symbol += '${element?.getSymbol() ?? '.'} ';
+        }
+        print(symbol);
+      }
+      print('\n' * 5);
+      break;
     default:
       // Ignore unknown commands
       break;
@@ -80,5 +93,5 @@ void handleInput(String input) {
 
 void initBoard() {
   // Initialize the chess board to the starting position
-  chessBoard.loadPositionFromFen('4k3/4q3/5n2/8/2Q1N3/2K2R2/8/8 w - - 0 1');
+  chessBoard.loadPositionFromFen('4k3/5pr1/p2p3p/p5PP/Pp2P1K1/5R2/4q1P1/R7 w - - 2 26');
 }

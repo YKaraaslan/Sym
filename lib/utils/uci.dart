@@ -2,9 +2,10 @@ import 'dart:convert';
 import 'dart:io';
 
 import '../board.dart';
+import 'constants.dart';
 
 class Uci {
-  void communicate(ChessBoard board) {
+  void communicate(ChessBoard chessBoard) {
     stdin.transform(utf8.decoder).listen((input) {
       // Split the input into a list of commands
       List<String> commands = input.split('\n');
@@ -21,14 +22,14 @@ class Uci {
           List<String> parts = command.split(' ');
           if (parts[1] == 'startpos') {
             // Reset the board to the starting position
-            board = ChessBoard();
+            chessBoard = ChessBoard();
           } else {
             // Implement support for setting up a custom position ---
           }
           if (parts.contains('moves')) {
             // Make the specified moves on the board
             for (int i = parts.indexOf('moves') + 1; i < parts.length; i++) {
-              board.makeMove(parts[i]);
+              chessBoard.makeMove(board, parts[i]);
             }
           }
         } else if (command == 'go') {

@@ -15,5 +15,5 @@ abstract class Piece {
   // Generate a list of valid moves for the piece
   Set<Move> generateMoves(List<List<Piece?>> board);
   String getSymbol();
-  int getControl(List<List<Piece?>> board);
+  Set<String> getControl(List<List<Piece?>> board);
 }

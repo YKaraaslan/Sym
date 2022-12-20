@@ -11,7 +11,7 @@ void main() {
     test('move', () {
       chessBoard = ChessBoard();
       chessBoard.loadPositionFromFen(startingPosition);
-      var moves = moveGenerator.generateMoves(chessBoard.board, activeColor);
+      var moves = moveGenerator.generateMoves(board, activeColor);
       expect(moves.length, 20);
     });
   });

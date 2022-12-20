@@ -1,6 +1,7 @@
 import 'models/bishop.dart';
 import 'models/king.dart';
 import 'models/knight.dart';
+import 'models/move.dart';
 import 'models/pawn.dart';
 import 'models/piece.dart';
 import 'models/queen.dart';
@@ -11,8 +12,6 @@ import 'utils/extensions.dart';
 
 // Represents a chess board with pieces
 class ChessBoard {
-  List<List<Piece?>> board = List.generate(8, (_) => List.generate(8, (index) => null));
-
   // A helper function to parse a FEN string and populate the chess board
   void loadPositionFromFen(String fen) {
     board = List.generate(8, (_) => List.generate(8, (index) => null));
@@ -68,20 +67,47 @@ class ChessBoard {
     return pieceTypeFromSymbol[symbol.toLowerCase()];
   }
 
-  // Makes a move on the board
-  void makeMove(String move) {
-    // Parse the move string and get the source and destination coordinates
-    int sourceX = 'abcdefgh'.indexOf(move[0]);
-    int sourceY = int.parse(move[1]) - 1;
-    int destX = 'abcdefgh'.indexOf(move[2]);
-    int destY = int.parse(move[3]) - 1;
+  void makeMove(List<List<Piece?>> localBoard, String moveString) {
+    // Parse the UCI string and make the move on the chess board
+    Move move = Move.fromUciString(moveString);
 
-    // Perform the move
-    board[destY][destX] = board[sourceY][sourceX];
-    board[sourceY][sourceX] = null;
-
-    // Switch the turn
-    activeColor = (activeColor == white) ? black : white;
+    if (move.isCastling) {
+      int rookx1;
+      int rooky1;
+      if (move.newRow > move.row) {
+        // Kingside castling
+        localBoard[move.row + 1][move.column] = localBoard[move.row + 3][move.column];
+        localBoard[move.row + 3][move.column] = null;
+        rookx1 = move.row + 1;
+        rooky1 = move.column;
+      } else {
+        // Queenside castling
+        localBoard[move.row - 1][move.column] = localBoard[move.row - 4][move.column];
+        localBoard[move.row - 4][move.column] = null;
+        rookx1 = move.row - 1;
+        rooky1 = move.column;
+      }
+      // Update the hasMoved property of the king and rook
+      (localBoard[move.row][move.column] as King).hasMoved = true;
+      (localBoard[rookx1][rooky1] as Rook).hasMoved = true;
+    } else {
+      // Perform a regular move
+      localBoard[move.newRow][move.newColumn] = localBoard[move.row][move.column];
+      localBoard[move.row][move.column] = null;
+    }
+    //Check En passant
+    if (activeColor == white && move.row == 1 && move.newRow == 3) {
+      localBoard[move.newRow][move.newColumn]?.enPassant = true;
+    } else if (activeColor == black && move.row == 6 && move.newRow == 4) {
+      localBoard[move.newRow][move.newColumn]?.enPassant = true;
+    }
+    // Update the active color and other internal state
+    activeColor = activeColor == white ? black : white;
+    halfMoveClock++;
+    if (activeColor == black) {
+      fullMoveClock++;
+    }
+    moveHistory.add(move);
   }
 
   void printTheBoard() {

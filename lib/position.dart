@@ -262,10 +262,53 @@ class Position {
       for (int j = 0; j < 8; j++) {
         Piece? piece = board[i][j];
         if (piece != null && piece.color == white) {
-          whiteSpace += piece.getControl(board);
+          whiteSpace += piece.getControl(board).length;
         }
         if (piece != null && piece.color == black) {
-          blackSpace += piece.getControl(board);
+          blackSpace += piece.getControl(board).length;
+        }
+      }
+    }
+
+    // Determine the square of the white king
+    String whiteKingSquare = '';
+    String blackKingSquare = '';
+    for (int i = 0; i < 8; i++) {
+      for (int j = 0; j < 8; j++) {
+        Piece? piece = board[i][j];
+        if (piece != null && piece is King) {
+          if (piece.color == white) {
+            whiteKingSquare = files[j] + (8 - i).toString();
+          } else if (piece.color == black) {
+            blackKingSquare = files[j] + (8 - i).toString();
+          }
+        }
+      }
+    }
+
+    // Calculate attack and defense
+    int whiteAttack = 0;
+    int blackAttack = 0;
+    int whiteDefense = 0;
+    int blackDefense = 0;
+    for (int i = 0; i < 8; i++) {
+      for (int j = 0; j < 8; j++) {
+        Piece? piece = board[i][j];
+        if (piece != null && piece.color == white) {
+          Set<String> control = piece.getControl(board);
+          if (control.contains(blackKingSquare)) {
+            whiteAttack++;
+          } else {
+            whiteDefense += control.length;
+          }
+        }
+        if (piece != null && piece.color == black) {
+          Set<String> control = piece.getControl(board);
+          if (control.contains(whiteKingSquare)) {
+            blackAttack++;
+          } else {
+            blackDefense += control.length;
+          }
         }
       }
     }
@@ -289,6 +332,8 @@ class Position {
         whitePieceCoordination +
         whitePieceActivity +
         whiteSpace +
+        whiteAttack +
+        whiteDefense +
         tempo;
     int blackEvaluation = blackMaterialValue +
         blackMaterial +
@@ -300,6 +345,8 @@ class Position {
         blackPieceCoordination +
         blackPieceActivity +
         blackSpace +
+        blackAttack +
+        blackDefense +
         tempo;
 
     // Return the evaluation for the active color

@@ -18,9 +18,9 @@ class Bishop extends Piece {
         while (x >= 0 && x < 8 && y >= 0 && y < 8) {
           Piece? target = board[x][y];
           if (target == null) {
-            moves.add(Move(this.x, this.y, x, y));
+            moves.add(Move(row: this.x, column: this.y, newRow: x, newColumn: y, newSquare: newSquareString(x, y)));
           } else if (target.color != color) {
-            moves.add(Move(this.x, this.y, x, y));
+            moves.add(Move(row: this.x, column: this.y, newRow: x, newColumn: y, newSquare: newSquareString(x, y)));
             break;
           } else {
             break;
@@ -45,12 +45,12 @@ class Bishop extends Piece {
   }
 
   @override
-  int getControl(List<List<Piece?>> board) {
-    Set<Move> control = {};
+  Set<String> getControl(List<List<Piece?>> board) {
+    Set<String> control = {};
     Set<Move> moves = generateMoves(board);
     for (Move move in moves) {
-      control.add(move);
+      control.add(move.newSquare);
     }
-    return control.length;
+    return control;
   }
 }

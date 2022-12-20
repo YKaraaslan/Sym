@@ -1,12 +1,23 @@
+import 'package:sym/utils/constants.dart';
+
 class Move {
   int row;
   int column;
   int newRow;
   int newColumn;
+  String newSquare;
   bool isCastling;
   bool isEnPassant;
 
-  Move(this.row, this.column, this.newRow, this.newColumn, {this.isCastling = false, this.isEnPassant = false});
+  Move({
+    required this.row,
+    required this.column,
+    required this.newRow,
+    required this.newColumn,
+    required this.newSquare,
+    this.isCastling = false,
+    this.isEnPassant = false,
+  });
 
   String toUciString() {
     String file1 = String.fromCharCode(column + 'a'.codeUnitAt(0));
@@ -17,10 +28,10 @@ class Move {
   }
 
   static Move fromUciString(String uci) {
-    int x1 = uci.codeUnitAt(0) - 'a'.codeUnitAt(0);
-    int y1 = int.parse(uci[1]) - 1;
-    int x2 = uci.codeUnitAt(2) - 'a'.codeUnitAt(0);
-    int y2 = int.parse(uci[3]) - 1;
-    return Move(x1, y1, x2, y2);
+    int x1 = int.parse(uci[1]) - 1;
+    int y1 = uci.codeUnitAt(0) - 'a'.codeUnitAt(0);
+    int x2 = int.parse(uci[3]) - 1;
+    int y2 = uci.codeUnitAt(2) - 'a'.codeUnitAt(0);
+    return Move(row: x1, column: y1, newRow: x2, newColumn: y2, newSquare: newSquareString(x2, y2));
   }
 }

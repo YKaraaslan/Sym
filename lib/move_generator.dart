@@ -4,7 +4,6 @@ import 'engine.dart';
 import 'models/king.dart';
 import 'models/move.dart';
 import 'models/piece.dart';
-import 'models/rook.dart';
 import 'position.dart';
 import 'utils/constants.dart';
 import 'utils/enums.dart';
@@ -24,49 +23,6 @@ class MoveGenerator {
     Move move = chooseMove(board, moves);
 
     return move.toUciString();
-  }
-
-  void makeMove(List<List<Piece?>> board, String moveString) {
-    // Parse the UCI string and make the move on the chess board
-    Move move = Move.fromUciString(moveString);
-
-    if (move.isCastling) {
-      int rookx1;
-      int rooky1;
-      if (move.newRow > move.row) {
-        // Kingside castling
-        board[move.row + 1][move.column] = board[move.row + 3][move.column];
-        board[move.row + 3][move.column] = null;
-        rookx1 = move.row + 1;
-        rooky1 = move.column;
-      } else {
-        // Queenside castling
-        board[move.row - 1][move.column] = board[move.row - 4][move.column];
-        board[move.row - 4][move.column] = null;
-        rookx1 = move.row - 1;
-        rooky1 = move.column;
-      }
-      // Update the hasMoved property of the king and rook
-      (board[move.row][move.column] as King).hasMoved = true;
-      (board[rookx1][rooky1] as Rook).hasMoved = true;
-    } else {
-      // Perform a regular move
-      board[move.newRow][move.newColumn] = board[move.row][move.column];
-      board[move.row][move.column] = null;
-    }
-    //Check En passant
-    if (activeColor == white && move.row == 1 && move.newRow == 3) {
-      board[move.newRow][move.newColumn]?.enPassant = true;
-    } else if (activeColor == black && move.row == 6 && move.newRow == 4) {
-      board[move.newRow][move.newColumn]?.enPassant = true;
-    }
-    // Update the active color and other internal state
-    activeColor = activeColor == white ? black : white;
-    halfMoveClock++;
-    if (activeColor == black) {
-      fullMoveClock++;
-    }
-    moveHistory.add(move);
   }
 
   Move chooseMove(List<List<Piece?>> board, Set<Move> moves) {
