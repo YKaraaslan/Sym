@@ -18,11 +18,8 @@ class Queen extends Piece {
           int y = this.y + j;
           while (x >= 0 && x < 8 && y >= 0 && y < 8) {
             Piece? target = board[x][y];
-            if (target == null) {
+            if (target == null || target.color != color) {
               moves.add(Move(row: this.x, column: this.y, newRow: x, newColumn: y, newSquare: newSquareString(x, y)));
-            } else if (target.color != color) {
-              moves.add(Move(row: this.x, column: this.y, newRow: x, newColumn: y, newSquare: newSquareString(x, y)));
-              break;
             } else {
               break;
             }

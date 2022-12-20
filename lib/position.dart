@@ -278,9 +278,9 @@ class Position {
         Piece? piece = board[i][j];
         if (piece != null && piece is King) {
           if (piece.color == white) {
-            whiteKingSquare = files[j] + (8 - i).toString();
+            whiteKingSquare = newSquareString(i, j);
           } else if (piece.color == black) {
-            blackKingSquare = files[j] + (8 - i).toString();
+            blackKingSquare = newSquareString(i, j);
           }
         }
       }

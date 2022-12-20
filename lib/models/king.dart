@@ -1,3 +1,4 @@
+import '../engine.dart';
 import '../square_checker.dart';
 import '../utils/constants.dart';
 import '../utils/enums.dart';
@@ -68,7 +69,11 @@ class King extends Piece {
   }
 
   bool isSquareAttacked(List<List<Piece?>> board, int col, int row) {
-    return SquareChecker().isSquareAttacked(board, row, col, color == white ? black : white);
+    King king = Engine().findKing(board, color);
+    Engine().removeKing(board, king);
+    var result = SquareChecker().isSquareAttacked(board, row, col, color == white ? black : white);
+    Engine().putKingBack(board, king);
+    return result;
   }
 
   @override

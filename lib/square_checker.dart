@@ -8,37 +8,24 @@ import 'utils/constants.dart';
 import 'utils/enums.dart';
 
 class SquareChecker {
-  bool isSquareAttacked(
-      List<List<Piece?>> board, int row, int col, PieceColor color) {
+  bool isSquareAttacked(List<List<Piece?>> board, int row, int col, PieceColor color) {
     // Check for attacks by pawns
     if (color == white) {
       // Check for attacks from the left
-      if (col > 0 &&
-          row > 0 &&
-          board[row - 1][col - 1] is Pawn &&
-          board[row - 1][col - 1]!.color == black) {
+      if (col > 0 && row > 0 && board[row - 1][col - 1] is Pawn && board[row - 1][col - 1]!.color == black) {
         return true;
       }
       // Check for attacks from the right
-      if (col < 7 &&
-          row > 0 &&
-          board[row - 1][col + 1] is Pawn &&
-          board[row - 1][col + 1]!.color == black) {
+      if (col < 7 && row > 0 && board[row - 1][col + 1] is Pawn && board[row - 1][col + 1]!.color == black) {
         return true;
       }
     } else {
       // Check for attacks from the left
-      if (col > 0 &&
-          row < 7 &&
-          board[row + 1][col - 1] is Pawn &&
-          board[row + 1][col - 1]!.color == white) {
+      if (col > 0 && row < 7 && board[row + 1][col - 1] is Pawn && board[row + 1][col - 1]!.color == white) {
         return true;
       }
       // Check for attacks from the right
-      if (col < 7 &&
-          row < 7 &&
-          board[row + 1][col + 1] is Pawn &&
-          board[row + 1][col + 1]!.color == white) {
+      if (col < 7 && row < 7 && board[row + 1][col + 1] is Pawn && board[row + 1][col + 1]!.color == white) {
         return true;
       }
     }
@@ -53,8 +40,7 @@ class SquareChecker {
           continue;
         }
         // Check if the destination square contains a knight of the correct color
-        if (board[row + r][col + c] is Knight &&
-            board[row + r][col + c]!.color == color) {
+        if (board[row + r][col + c] is Knight && board[row + r][col + c]!.color == color) {
           return true;
         }
       }

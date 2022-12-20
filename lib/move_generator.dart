@@ -1,5 +1,7 @@
 import 'dart:math';
 
+import 'package:sym/board.dart';
+
 import 'engine.dart';
 import 'models/king.dart';
 import 'models/move.dart';
@@ -176,14 +178,13 @@ class MoveGenerator {
   Set<Move> filterMoves(List<List<Piece?>> board, Set<Move> moves, PieceColor activeColor) {
     Set<Move> validMoves = {};
 
-    for (Move move in moves) {
-      // Make a copy of the board and perform the move
-      List<List<Piece?>> copy = deepCopyBoard(board);
-      copy[move.newRow][move.newColumn] = copy[move.row][move.column];
-      copy[move.row][move.column] = null;
+    for (Move move in moves.toList()) {
+      // Make a copy of the board and try making the move.
+      List<List<Piece?>> newBoard = deepCopyBoard(board);
+      ChessBoard().makeMoveForBoard(newBoard, move.toUciString());
 
-      // Check if the king is in check after the move
-      if (!Engine().isCheck(copy, activeColor)) {
+      // If the king is not in check on the new board, add the move to the list of legal moves.
+      if (!Engine().isCheck(newBoard, activeColor)) {
         validMoves.add(move);
       }
     }

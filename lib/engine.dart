@@ -27,7 +27,7 @@ class Engine {
       Move move = moves.elementAt(index);
 
       // Make the move on the chess board
-      ChessBoard().makeMove(board, move.toUciString());
+      ChessBoard().makeMove(move.toUciString());
 
       // Check if the game is over (i.e., there is a winner or the game is a draw)
       if (MoveGenerator().isEndGame(board)) {
@@ -128,7 +128,7 @@ class Engine {
     for (Move move in moves) {
       // Make the move on a copy of the board
       List<List<Piece?>> copy = MoveGenerator().deepCopyBoard(board);
-      ChessBoard().makeMove(copy, move.toUciString());
+      ChessBoard().makeMoveForBoard(copy, move.toUciString());
 
       // If the king is no longer in check on the copy of the board, it is not checkmate
       if (!isCheck(copy, color)) {
@@ -147,7 +147,7 @@ class Engine {
       for (int j = 0; j < 8; j++) {
         Piece? piece = board[i][j];
         if (piece is King && piece.color == kingColor) {
-          kingSquare = '${String.fromCharCode(97 + j)}${8 - i}';
+          kingSquare = newSquareString(i, j);
           break;
         }
       }
@@ -168,5 +168,29 @@ class Engine {
     }
 
     return false;
+  }
+
+  // Find the king of the given color on the board
+  King findKing(List<List<Piece?>> board, PieceColor color) {
+    late King king;
+    for (int i = 0; i < 8; i++) {
+      for (int j = 0; j < 8; j++) {
+        Piece? piece = board[i][j];
+        if (piece is King && piece.color == color) {
+          king = piece;
+        }
+      }
+    }
+    return king;
+  }
+
+  // Remove the king from the board
+  void removeKing(List<List<Piece?>> board, King king) {
+    board[king.x][king.y] = null;
+  }
+
+  // Put the king back on the board
+  void putKingBack(List<List<Piece?>> board, King king) {
+    board[king.x][king.y] = king;
   }
 }

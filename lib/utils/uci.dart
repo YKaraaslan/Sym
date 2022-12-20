@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'dart:io';
 
 import '../board.dart';
-import 'constants.dart';
 
 class Uci {
   void communicate(ChessBoard chessBoard) {
@@ -29,7 +28,7 @@ class Uci {
           if (parts.contains('moves')) {
             // Make the specified moves on the board
             for (int i = parts.indexOf('moves') + 1; i < parts.length; i++) {
-              chessBoard.makeMove(board, parts[i]);
+              chessBoard.makeMove(parts[i]);
             }
           }
         } else if (command == 'go') {

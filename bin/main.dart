@@ -47,14 +47,14 @@ void handleInput(String input) {
         for (int i = tokens.length - 1; i < tokens.length; i++) {
           String move = tokens[i];
           // Make the move on the chess board and update the internal state
-          chessBoard.makeMove(board, move);
+          chessBoard.makeMove(move);
         }
       }
       break;
     case 'go':
       // Generate and make a move, and send it to the GUI
       String move = MoveGenerator().generateMove(board);
-      chessBoard.makeMove(board, move);
+      chessBoard.makeMove(move);
       stdout.write('bestmove $move\n');
       print('\n' * 10);
       for (var i = board.length - 1; i >= 0; i--) {
@@ -74,7 +74,7 @@ void handleInput(String input) {
       exit(0);
     case 'move':
       if (tokens[1].length != 4) break;
-      chessBoard.makeMove(board, tokens[1]);
+      chessBoard.makeMove(tokens[1]);
       print('\n' * 10);
       for (var i = board.length - 1; i >= 0; i--) {
         var symbol = '';
@@ -93,5 +93,5 @@ void handleInput(String input) {
 
 void initBoard() {
   // Initialize the chess board to the starting position
-  chessBoard.loadPositionFromFen('4k3/5pr1/p2p3p/p5PP/Pp2P1K1/5R2/4q1P1/R7 w - - 2 26');
+  chessBoard.loadPositionFromFen(startingPosition);
 }
