@@ -1,42 +1,105 @@
-import '../utils/constants.dart';
+import 'package:sym/utils/constants.dart';
 
 class Move {
   int row;
   int column;
   int newRow;
   int newColumn;
+  String oldSquare;
   String newSquare;
   bool isCastling;
   bool isEnPassant;
+  String? promotion;
 
   Move({
     required this.row,
     required this.column,
     required this.newRow,
     required this.newColumn,
+    required this.oldSquare,
     required this.newSquare,
     this.isCastling = false,
     this.isEnPassant = false,
+    this.promotion,
   });
 
   String toUciString() {
-    String file1 = String.fromCharCode(column + 'a'.codeUnitAt(0));
-    String file2 = String.fromCharCode(newColumn + 'a'.codeUnitAt(0));
-    String rank1 = (row + 1).toString();
-    String rank2 = (newRow + 1).toString();
-    return '$file1$rank1$file2$rank2';
+    // If the move is a castling move, return the appropriate UCI string
+    if (isCastling) {
+      // Return the appropriate UCI castle move string
+      if (newColumn == 6) {
+        return (row == 7) ? 'e8g8' : 'e1g1';
+      } else {
+        return (row == 7) ? 'e8c8' : 'e1c1';
+      }
+    }
+
+    // Build the UCI string
+    String uciString = '$oldSquare$newSquare';
+
+    // Append the 'e.p.' indicator if the move is an en passant capture
+    if (isEnPassant) {
+      uciString += ' e.p.';
+    } else if (promotion != null) {
+      uciString += promotion!;
+    }
+
+    return uciString;
   }
 
-  static Move fromUciString(String uci) {
-    int x1 = int.parse(uci[1]) - 1;
-    int y1 = uci.codeUnitAt(0) - 'a'.codeUnitAt(0);
-    int x2 = int.parse(uci[3]) - 1;
-    int y2 = uci.codeUnitAt(2) - 'a'.codeUnitAt(0);
-    return Move(
-        row: x1,
-        column: y1,
-        newRow: x2,
-        newColumn: y2,
-        newSquare: newSquareString(x2, y2));
+  static Move fromUciString(String moveString) {
+    int row = (moveString[1] == '1') ? 0 : 7;
+    // Check if the move is a castle move
+    if (moveString == 'e1g1' || moveString == 'e8g8') {
+      // Kingside castle
+      return Move(
+        row: row,
+        column: 4,
+        newRow: row,
+        newColumn: 6,
+        isCastling: true,
+        oldSquare: '${files[4]}${row + 1}',
+        newSquare: '${files[6]}${row + 1}',
+      );
+    } else if (moveString == 'e1c1' || moveString == 'e8c8') {
+      // Queenside castle
+      return Move(
+        row: row,
+        column: 4,
+        newRow: row,
+        newColumn: 2,
+        isCastling: true,
+        oldSquare: '${files[4]}${row + 1}',
+        newSquare: '${files[2]}${row + 1}',
+      );
+    } else {
+      // Parse the starting square
+      int column = moveString.codeUnitAt(0) - 97;
+      int row = int.parse(moveString[1]) - 1;
+
+      // Parse the destination square
+      int newColumn = moveString.codeUnitAt(2) - 97;
+      int newRow = int.parse(moveString[3]) - 1;
+
+      // Check if the move is an en passant capture
+      bool isEnPassant = (row - newRow).abs() == 1 && column != newColumn;
+
+      // Check if the move is a pawn promotion
+      String? promotion;
+      if (moveString.length == 5) {
+        promotion = moveString[4];
+      }
+
+      return Move(
+        row: row,
+        column: column,
+        newRow: newRow,
+        newColumn: newColumn,
+        isEnPassant: isEnPassant,
+        promotion: promotion,
+        oldSquare: '${files[column]}${row + 1}',
+        newSquare: '${files[newColumn]}${newRow + 1}',
+      );
+    }
   }
 }

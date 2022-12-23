@@ -19,12 +19,7 @@ class Knight extends Piece {
           if (x >= 0 && x < 8 && y >= 0 && y < 8) {
             Piece? target = board[x][y];
             if (target == null || target.color != color) {
-              moves.add(Move(
-                  row: this.x,
-                  column: this.y,
-                  newRow: x,
-                  newColumn: y,
-                  newSquare: newSquareString(x, y)));
+              moves.add(Move(row: this.x, column: this.y, newRow: x, newColumn: y, newSquare: newSquareString(x, y), oldSquare: newSquareString(this.x, this.y)));
             }
           }
         }

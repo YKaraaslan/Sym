@@ -95,5 +95,21 @@ void main() {
       var moves = MoveGenerator().generateMoves(board, activeColor);
       expect(moves.length, 4);
     });
+
+    test('castle', () {
+      ChessBoard().loadPositionFromFen('8/8/8/8/8/8/8/R3K2R w KQ - 0 1');
+      var moves = MoveGenerator().generateMoves(board, activeColor);
+      for (var element in moves) {
+        if (element.toUciString().startsWith('e1')) {
+          print(element.toUciString());
+        }
+      }
+    });
+
+    test('rook capture', () {
+      ChessBoard().loadPositionFromFen('8/2p5/3p4/KP5r/1R3p1k/6P1/4P3/8 b - - 0 8');
+      var res = SquareChecker().isSquareAttacked(board, 3, 6, white);
+      print(res);
+    });
   });
 }

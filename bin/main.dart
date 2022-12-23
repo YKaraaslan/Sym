@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'dart:io';
 
 import 'package:sym/models/move.dart';
@@ -7,23 +6,17 @@ import 'package:sym/utils/constants.dart';
 
 void main() {
   // Initialize the chess board to the starting position
-  chessBoard.loadPositionFromFen(startingPosition);
+  chessBoard.loadPositionFromFen('r3k2r/Pppp1ppp/1b3nbN/nP6/BBP1P3/q4N2/Pp1P2PP/R2Q1RK1 w kq - 0 1');
 
-  // print(moveGenerationTest(3));
-
-  // for (int i = 0; i < 8; i++) {
-  //   for (int j = 0; j < 8; j++) {
-  //     if (SquareChecker().isSquareAttacked(board, i, j, black)) {
-  //       print('$i$j');
-  //     }
-  //   }
-  // }
+  print('\n' * 3);
+  print(moveGenerationTest(2));
+  print('\n' * 3);
 
   // Set up the input and output streams
-  stdin.transform(utf8.decoder).transform(LineSplitter()).listen(handleInput);
+  // stdin.transform(utf8.decoder).transform(LineSplitter()).listen(handleInput);
 
   // Send the "uci" command to the GUI to initiate the UCI communication
-  stdout.write('uci\n');
+  // stdout.write('uci\n');
 }
 
 int moveGenerationTest(int depth) {
@@ -35,8 +28,9 @@ int moveGenerationTest(int depth) {
   int numberOfPositions = 0;
 
   for (Move move in moves) {
-    var a = MoveGenerator().deepCopyBoard(board);
-    chessBoard.makeMoveForBoard(a, move.toUciString());
+    print(move.toUciString());
+    var localBoard = MoveGenerator().deepCopyBoard(board);
+    chessBoard.makeMoveForBoard(localBoard, move);
     numberOfPositions += moveGenerationTest(depth - 1);
   }
 
@@ -75,14 +69,14 @@ void handleInput(String input) {
         for (int i = tokens.length - 1; i < tokens.length; i++) {
           String move = tokens[i];
           // Make the move on the chess board and update the internal state
-          chessBoard.makeMove(move);
+          chessBoard.makeMove(Move.fromUciString(move));
         }
       }
       break;
     case 'go':
       // Generate and make a move, and send it to the GUI
       String move = MoveGenerator().generateMove(board);
-      chessBoard.makeMove(move);
+      chessBoard.makeMove(Move.fromUciString(move));
       stdout.write('bestmove $move\n');
       print('\n' * 10);
       for (var i = board.length - 1; i >= 0; i--) {

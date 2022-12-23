@@ -16,7 +16,7 @@ class ChessBoard {
   void loadPositionFromFen(String fen) {
     board = List.generate(8, (_) => List.generate(8, (index) => null));
     // Split the FEN string into parts
-    List<String> parts = fen.split(' ');
+    List<String> parts = fen.trim().split(' ');
     if (parts.length != 6) {
       throw Exception('Invalid FEN String');
     }
@@ -51,142 +51,96 @@ class ChessBoard {
     halfMoveClock = int.parse(halfMoveClockResult);
     fullMoveClock = int.parse(fullMoveNumberResult);
 
-    printTheBoard();
+    // printTheBoard();
   }
 
   Piece? getPiece(String symbol, int x, int y) {
     PieceColor color = symbol.isUpperCase() ? white : black;
     var pieceTypeFromSymbol = {
       'k': King(x, y, color, maxValue),
-      'p': Pawn(x, y, color, 1),
-      'n': Knight(x, y, color, 3),
-      'b': Bishop(x, y, color, 3),
-      'r': Rook(x, y, color, 5),
-      'q': Queen(x, y, color, 9),
+      'p': Pawn(x, y, color, 100),
+      'n': Knight(x, y, color, 320),
+      'b': Bishop(x, y, color, 330),
+      'r': Rook(x, y, color, 500),
+      'q': Queen(x, y, color, 900),
     };
     return pieceTypeFromSymbol[symbol.toLowerCase()];
   }
 
-  void makeMove(String moveString, {bool undo = false}) {
-    // Parse the UCI string and make the move on the chess board
-    Move move = Move.fromUciString(moveString);
-
+  void makeMove(Move move) {
     if (move.isCastling) {
       int rookRow = move.row;
       int rookCol = (move.newColumn > move.column) ? 7 : 0;
       Piece? rook = board[rookRow][rookCol];
       board[rookRow][rookCol] = null;
-      int newRookCol = (move.newColumn > move.column)
-          ? move.newColumn - 1
-          : move.newColumn + 1;
+      int newRookCol = (move.newColumn > move.column) ? move.newColumn - 1 : move.newColumn + 1;
       board[rookRow][newRookCol] = rook;
 
       // Update the hasMoved property of the king and rook
-      if (!undo) {
-        (board[move.row][move.column] as King).hasMoved = true;
-        (board[rookRow][newRookCol] as Rook).hasMoved = true;
-      } else {
-        (board[move.row][move.column] as King).hasMoved = false;
-        (board[rookRow][newRookCol] as Rook).hasMoved = false;
-        // Undo the castling move
-        board[move.row][move.column] = board[move.newRow][move.newColumn];
-        board[move.newRow][move.newColumn] = null;
-        board[rookRow][rookCol] = rook;
-        board[rookRow][newRookCol] = null;
-      }
+      (board[move.row][move.column] as King).hasMoved = true;
+      (board[rookRow][newRookCol] as Rook).hasMoved = true;
     } else {
       // Perform a regular move
-      if (!undo) {
-        board[move.newRow][move.newColumn] = board[move.row][move.column];
-        board[move.row][move.column] = null;
-      } else {
-        board[move.row][move.column] = board[move.newRow][move.newColumn];
-        board[move.newRow][move.newColumn] = null;
-      }
-
-      if (!undo) {
-        print('\n' * 10);
-        for (var i = board.length - 1; i >= 0; i--) {
-          var symbol = '';
-          for (var element in board[i]) {
-            symbol += '${element?.getSymbol() ?? '.'} ';
-          }
-          print(symbol);
-        }
-        print('\n' * 5);
-      }
+      board[move.newRow][move.newColumn] = board[move.row][move.column];
+      board[move.newRow][move.newColumn]?.hasMoved = true;
+      board[move.row][move.column] = null;
     }
 
-    //Check En passant
-    if (!undo) {
-      if (activeColor == white && move.row == 1 && move.newRow == 3) {
-        board[move.newRow][move.newColumn]?.enPassant = true;
-      } else if (activeColor == black && move.row == 6 && move.newRow == 4) {
-        board[move.newRow][move.newColumn]?.enPassant = true;
+    // Delete when the move is en passant
+    if (move.isEnPassant) {
+      board[move.row][move.newColumn] = null;
+    }
+
+    // Check if the moved piece is a pawn that has reached the end of the board
+    if (board[move.newRow][move.newColumn] is Pawn && (move.newRow == 0 || move.newRow == 7)) {
+      // Pawn has reached the end of the board, promote to a Queen
+      board[move.newRow][move.newColumn] = Queen(move.newRow, move.newColumn, board[move.newRow][move.newColumn]!.color, 900);
+    }
+
+    // Check En passant
+    if (activeColor == white && move.row == 1 && move.newRow == 3) {
+      for (var piece in board[move.newRow]) {
+        if (piece != null) {
+          piece.enPassant = false;
+        }
       }
-    } else {
-      if (activeColor == white && move.row == 1 && move.newRow == 3) {
-        board[move.newRow][move.newColumn]?.enPassant = false;
-      } else if (activeColor == black && move.row == 6 && move.newRow == 4) {
-        board[move.newRow][move.newColumn]?.enPassant = false;
+      board[move.newRow][move.newColumn]?.enPassant = true;
+    } else if (activeColor == black && move.row == 6 && move.newRow == 4) {
+      for (var piece in board[move.newRow]) {
+        if (piece != null) {
+          piece.enPassant = false;
+        }
       }
+      board[move.newRow][move.newColumn]?.enPassant = true;
     }
 
     // Update the move numbers
     if (activeColor == white) {
-      if (!undo) {
-        whiteMoves++;
-      } else {
-        whiteMoves--;
-      }
+      whiteMoves++;
     } else {
-      if (!undo) {
-        blackMoves++;
-      } else {
-        blackMoves--;
-      }
+      blackMoves++;
     }
 
     // Update the clocks
-    if (!undo) {
-      halfMoveClock++;
-      if (activeColor == black) {
-        fullMoveClock++;
-      }
-    } else {
-      halfMoveClock--;
-      if (activeColor == black) {
-        fullMoveClock--;
-      }
+    halfMoveClock++;
+    if (activeColor == black) {
+      fullMoveClock++;
     }
 
     // Update the active color and other internal state
     activeColor = activeColor == white ? black : white;
 
-    if (!undo) {
-      moveHistory.add(move);
-    }
+    // Add to the move history
+    moveHistory.add(move);
   }
 
-  void undoMove() {
-    if (moveHistory.isNotEmpty) {
-      Move move = moveHistory.removeLast();
-      makeMove(move.toUciString(), undo: true);
-    }
-  }
-
-  void makeMoveForBoard(List<List<Piece?>> localBoard, String moveString) {
-    // Parse the UCI string and make the move on the chess board
-    Move move = Move.fromUciString(moveString);
-
+  void makeMoveForBoard(List<List<Piece?>> localBoard, Move move) {
     if (move.isCastling) {
       int rookRow = move.row;
       int rookCol = (move.newColumn > move.column) ? 7 : 0;
       Piece? rook = localBoard[rookRow][rookCol];
       localBoard[rookRow][rookCol] = null;
-      int newRookCol = (move.newColumn > move.column)
-          ? move.newColumn - 1
-          : move.newColumn + 1;
+      int newRookCol = (move.newColumn > move.column) ? move.newColumn - 1 : move.newColumn + 1;
       localBoard[rookRow][newRookCol] = rook;
 
       // Update the hasMoved property of the king and rook
@@ -194,17 +148,40 @@ class ChessBoard {
       (localBoard[rookRow][newRookCol] as Rook).hasMoved = true;
     } else {
       // Perform a regular move
-      localBoard[move.newRow][move.newColumn] =
-          localBoard[move.row][move.column];
+      localBoard[move.newRow][move.newColumn] = localBoard[move.row][move.column];
+      localBoard[move.newRow][move.newColumn]?.hasMoved = true;
       localBoard[move.row][move.column] = null;
     }
 
-    //Check En passant
+    // Delete when the move is en passant
+    if (move.isEnPassant) {
+      localBoard[move.row][move.newColumn] = null;
+    }
+
+    // Check if the moved piece is a pawn that has reached the end of the localBoard
+    if (localBoard[move.newRow][move.newColumn] is Pawn && (move.newRow == 0 || move.newRow == 7)) {
+      // Pawn has reached the end of the localBoard, promote to a Queen
+      localBoard[move.newRow][move.newColumn] = Queen(move.newRow, move.newColumn, localBoard[move.newRow][move.newColumn]!.color, 900);
+    }
+
+    // Check En passant
     if (activeColor == white && move.row == 1 && move.newRow == 3) {
+      for (var piece in localBoard[move.newRow]) {
+        if (piece != null) {
+          piece.enPassant = false;
+        }
+      }
       localBoard[move.newRow][move.newColumn]?.enPassant = true;
     } else if (activeColor == black && move.row == 6 && move.newRow == 4) {
+      for (var piece in localBoard[move.newRow]) {
+        if (piece != null) {
+          piece.enPassant = false;
+        }
+      }
       localBoard[move.newRow][move.newColumn]?.enPassant = true;
     }
+
+    // Update the active color and other internal state
     activeColor = activeColor == white ? black : white;
   }
 

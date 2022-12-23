@@ -28,7 +28,7 @@ class Queen extends Piece {
                 column: this.y,
                 newRow: x,
                 newColumn: y,
-                newSquare: newSquareString(x, y)));
+                newSquare: newSquareString(x, y), oldSquare: newSquareString(this.x, this.y)));
           }
 
           // Stop iterating if we encounter a piece
