@@ -3,27 +3,25 @@ import 'dart:io';
 
 import 'package:sym/models/move.dart';
 import 'package:sym/move_generator.dart';
+import 'package:sym/precomputed_mode_data.dart';
 import 'package:sym/utils/constants.dart';
 
 void main() {
+  // Create precomputed move data for all the pieces
+  PrecomputedMoveData().calculate();
+
+  print(PrecomputedMoveData.whitePawnMoves);
+
   // Initialize the chess board to the starting position
   chessBoard.loadPositionFromFen(startingPosition);
 
-  // print(moveGenerationTest(3));
-
-  // for (int i = 0; i < 8; i++) {
-  //   for (int j = 0; j < 8; j++) {
-  //     if (SquareChecker().isSquareAttacked(board, i, j, black)) {
-  //       print('$i$j');
-  //     }
-  //   }
-  // }
+  print(moveGenerationTest(1));
 
   // Set up the input and output streams
-  stdin.transform(utf8.decoder).transform(LineSplitter()).listen(handleInput);
+  // stdin.transform(utf8.decoder).transform(LineSplitter()).listen(handleInput);
 
   // Send the "uci" command to the GUI to initiate the UCI communication
-  stdout.write('uci\n');
+  // stdout.write('uci\n');
 }
 
 int moveGenerationTest(int depth) {

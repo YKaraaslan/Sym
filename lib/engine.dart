@@ -142,7 +142,7 @@ class Engine {
       for (int j = 0; j < 8; j++) {
         Piece? piece = board[i][j];
         if (piece != null && piece is King && piece.color == kingColor) {
-          kingSquare = newSquareString(i, j);
+          kingSquare = squareName(i, j);
           break;
         }
       }

@@ -1,3 +1,5 @@
+import 'package:sym/precomputed_mode_data.dart';
+
 import '../utils/constants.dart';
 import '../utils/enums.dart';
 import 'move.dart';
@@ -10,34 +12,17 @@ class Bishop extends Piece {
   Set<Move> generateMoves(List<List<Piece?>> board) {
     Set<Move> moves = {};
 
-    // Bishops can move diagonally in any direction
-    for (int i = -1; i <= 1; i += 2) {
-      for (int j = -1; j <= 1; j += 2) {
-        int x = this.x + i;
-        int y = this.y + j;
-        while (x >= 0 && x < 8 && y >= 0 && y < 8) {
-          Piece? target = board[x][y];
-          if (target == null) {
-            moves.add(Move(
-                row: this.x,
-                column: this.y,
-                newRow: x,
-                newColumn: y,
-                newSquare: newSquareString(x, y)));
-          } else if (target.color != color) {
-            moves.add(Move(
-                row: this.x,
-                column: this.y,
-                newRow: x,
-                newColumn: y,
-                newSquare: newSquareString(x, y)));
-            break;
-          } else {
-            break;
-          }
-          x += i;
-          y += j;
-        }
+    // Get the precomputed bishop moves for this square.
+    List<int> bishopMoves = PrecomputedMoveData.bishopMoves[x * 8 + y];
+
+    // Iterate through the precomputed moves.
+    for (int move in bishopMoves) {
+      int newRow = move ~/ 8;
+      int newCol = move % 8;
+
+      // Check if the destination square is empty or contains an opponent's piece.
+      if (board[newRow][newCol] == null || board[newRow][newCol]?.color != color) {
+        moves.add(Move(row: x, column: y, newRow: newRow, newColumn: newCol, fromSquare: squareName(x, y), toSquare: squareName(newRow, newCol)));
       }
     }
 
@@ -59,7 +44,7 @@ class Bishop extends Piece {
     Set<String> control = {};
     Set<Move> moves = generateMoves(board);
     for (Move move in moves) {
-      control.add(move.newSquare);
+      control.add(move.toSquare);
     }
     return control;
   }

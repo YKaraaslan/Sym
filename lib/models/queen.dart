@@ -1,3 +1,4 @@
+import '../precomputed_mode_data.dart';
 import '../utils/constants.dart';
 import '../utils/enums.dart';
 import 'move.dart';
@@ -10,34 +11,43 @@ class Queen extends Piece {
   Set<Move> generateMoves(List<List<Piece?>> board) {
     Set<Move> moves = {};
 
-    // Queens can move horizontally, vertically, or diagonally in any direction
-    for (int i = -1; i <= 1; i++) {
-      for (int j = -1; j <= 1; j++) {
-        // Skip the case where i and j are both 0
-        if (i == 0 && j == 0) continue;
+    // Get the precomputed queen moves for this square.
+    List<int> queenMoves = PrecomputedMoveData.queenMoves[x * 8 + y];
 
-        // Check all possible moves in this direction
-        int x = this.x + i;
-        int y = this.y + j;
-        while (x >= 0 && x < 8 && y >= 0 && y < 8) {
-          Piece? target = board[x][y];
-          if (target == null || target.color != color) {
-            // Add a move to the list of moves
+    // Iterate through the precomputed moves.
+    for (int move in queenMoves) {
+      int newX = move ~/ 8;
+      int newY = move % 8;
+
+      // Check if the destination square is within the board boundaries.
+      if (newX >= 0 && newX < 8 && newY >= 0 && newY < 8) {
+        // If the square is empty, add it as a valid move.
+        if (board[newX][newY] == null) {
+          moves.add(Move(
+            row: x,
+            column: y,
+            newRow: newX,
+            newColumn: newY,
+            fromSquare: squareName(x, y),
+            toSquare: squareName(newX, newY),
+          ));
+        } else {
+          // If the square contains an opponent's piece, add it as a valid move and stop checking further in this direction.
+          if (board[newX][newY]!.color != color) {
             moves.add(Move(
-                row: this.x,
-                column: this.y,
-                newRow: x,
-                newColumn: y,
-                newSquare: newSquareString(x, y)));
+              row: x,
+              column: y,
+              newRow: newX,
+              newColumn: newY,
+              fromSquare: squareName(x, y),
+              toSquare: squareName(newX, newY),
+            ));
           }
-
-          // Stop iterating if we encounter a piece
-          if (target != null) break;
-
-          // Move to the next square in this direction
-          x += i;
-          y += j;
+          break;
         }
+      } else {
+        // If the destination square is outside the board boundaries, stop checking further in this direction.
+        break;
       }
     }
 
@@ -59,7 +69,7 @@ class Queen extends Piece {
     Set<String> control = {};
     Set<Move> moves = generateMoves(board);
     for (Move move in moves) {
-      control.add(move.newSquare);
+      control.add(move.toSquare);
     }
     return control;
   }

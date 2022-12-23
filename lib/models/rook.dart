@@ -1,3 +1,4 @@
+import '../precomputed_mode_data.dart';
 import '../utils/constants.dart';
 import '../utils/enums.dart';
 import 'move.dart';
@@ -10,96 +11,42 @@ class Rook extends Piece {
   Set<Move> generateMoves(List<List<Piece?>> board) {
     Set<Move> moves = {};
 
-    // Generate moves in the up direction
-    for (int row = x + 1; row < 8; row++) {
-      // Check if the destination square is empty or contains an enemy piece
-      Piece? piece = board[row][y];
-      if (piece == null) {
-        moves.add(Move(
-            row: x,
-            column: y,
-            newRow: row,
-            newColumn: y,
-            newSquare: newSquareString(row, y)));
-      } else {
-        if (piece.color != color) {
-          moves.add(Move(
-              row: x,
-              column: y,
-              newRow: row,
-              newColumn: y,
-              newSquare: newSquareString(row, y)));
-        }
-        break;
-      }
-    }
+    // Get the precomputed rook moves for this square.
+    List<int> rookMoves = PrecomputedMoveData.rookMoves[x * 8 + y];
 
-    // Generate moves in the down direction
-    for (int row = x - 1; row >= 0; row--) {
-      // Check if the destination square is empty or contains an enemy piece
-      Piece? piece = board[row][y];
-      if (piece == null) {
-        moves.add(Move(
-            row: x,
-            column: y,
-            newRow: row,
-            newColumn: y,
-            newSquare: newSquareString(row, y)));
-      } else {
-        if (piece.color != color) {
-          moves.add(Move(
-              row: x,
-              column: y,
-              newRow: row,
-              newColumn: y,
-              newSquare: newSquareString(row, y)));
-        }
-        break;
-      }
-    }
+    // Iterate through the precomputed moves.
+    for (int move in rookMoves) {
+      int newX = move ~/ 8;
+      int newY = move % 8;
 
-    // Generate moves in the right direction
-    for (int c = y + 1; c < 8; c++) {
-      // Check if the destination square is empty or contains an enemy piece
-      Piece? piece = board[x][c];
-      if (piece == null) {
-        moves.add(Move(
+      // Check if the destination square is within the board boundaries.
+      if (newX >= 0 && newX < 8 && newY >= 0 && newY < 8) {
+        // If the square is empty, add it as a valid move.
+        if (board[newX][newY] == null) {
+          moves.add(Move(
             row: x,
             column: y,
-            newRow: x,
-            newColumn: c,
-            newSquare: newSquareString(x, c)));
-      } else {
-        if (piece.color != color) {
-          moves.add(Move(
+            newRow: newX,
+            newColumn: newY,
+            fromSquare: squareName(x, y),
+            toSquare: squareName(newX, newY),
+          ));
+        } else {
+          // If the square contains an opponent's piece, add it as a valid move and stop checking further in this direction.
+          if (board[newX][newY]!.color != color) {
+            moves.add(Move(
               row: x,
               column: y,
-              newRow: x,
-              newColumn: c,
-              newSquare: newSquareString(x, c)));
+              newRow: newX,
+              newColumn: newY,
+              fromSquare: squareName(x, y),
+              toSquare: squareName(newX, newY),
+            ));
+          }
+          break;
         }
-        break;
-      }
-    } // Generate moves in the left direction
-    for (int c = y - 1; c >= 0; c--) {
-      // Check if the destination square is empty or contains an enemy piece
-      Piece? piece = board[x][c];
-      if (piece == null) {
-        moves.add(Move(
-            row: x,
-            column: y,
-            newRow: x,
-            newColumn: c,
-            newSquare: newSquareString(x, c)));
       } else {
-        if (piece.color != color) {
-          moves.add(Move(
-              row: x,
-              column: y,
-              newRow: x,
-              newColumn: c,
-              newSquare: newSquareString(x, c)));
-        }
+        // If the destination square is outside the board boundaries, stop checking further in this direction.
         break;
       }
     }
@@ -122,7 +69,7 @@ class Rook extends Piece {
     Set<String> control = {};
     Set<Move> moves = generateMoves(board);
     for (Move move in moves) {
-      control.add(move.newSquare);
+      control.add(move.toSquare);
     }
     return control;
   }

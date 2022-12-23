@@ -1,3 +1,4 @@
+import '../precomputed_mode_data.dart';
 import '../utils/constants.dart';
 import '../utils/enums.dart';
 import 'move.dart';
@@ -10,24 +11,24 @@ class Knight extends Piece {
   Set<Move> generateMoves(List<List<Piece?>> board) {
     Set<Move> moves = {};
 
-    // Knights can move in an L-shape (two squares in one direction, one square in the other)
-    for (int i = -2; i <= 2; i++) {
-      for (int j = -2; j <= 2; j++) {
-        if (i.abs() + j.abs() == 3) {
-          int x = this.x + i;
-          int y = this.y + j;
-          if (x >= 0 && x < 8 && y >= 0 && y < 8) {
-            Piece? target = board[x][y];
-            if (target == null || target.color != color) {
-              moves.add(Move(
-                  row: this.x,
-                  column: this.y,
-                  newRow: x,
-                  newColumn: y,
-                  newSquare: newSquareString(x, y)));
-            }
-          }
-        }
+    // Get the precomputed knight moves for this square.
+    List<int> knightMoves = PrecomputedMoveData.knightMoves[x * 8 + y];
+
+    // Iterate through the precomputed moves.
+    for (int move in knightMoves) {
+      int newX = move ~/ 8;
+      int newY = move % 8;
+
+      // Check if the destination square is within the board boundaries and is either empty or contains an opponent's piece.
+      if (newX >= 0 && newX < 8 && newY >= 0 && newY < 8 && (board[newX][newY] == null || board[newX][newY]!.color != color)) {
+        moves.add(Move(
+          row: x,
+          column: y,
+          newRow: newX,
+          newColumn: newY,
+          fromSquare: squareName(x, y),
+          toSquare: squareName(newX, newY),
+        ));
       }
     }
 
@@ -49,7 +50,7 @@ class Knight extends Piece {
     Set<String> control = {};
     Set<Move> moves = generateMoves(board);
     for (Move move in moves) {
-      control.add(move.newSquare);
+      control.add(move.toSquare);
     }
     return control;
   }

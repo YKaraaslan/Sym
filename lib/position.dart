@@ -302,9 +302,9 @@ class Position {
         Piece? piece = board[i][j];
         if (piece != null && piece is King) {
           if (piece.color == white) {
-            whiteKingSquare = newSquareString(i, j);
+            whiteKingSquare = squareName(i, j);
           } else if (piece.color == black) {
-            blackKingSquare = newSquareString(i, j);
+            blackKingSquare = squareName(i, j);
           }
         }
       }

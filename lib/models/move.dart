@@ -5,7 +5,8 @@ class Move {
   int column;
   int newRow;
   int newColumn;
-  String newSquare;
+  String fromSquare;
+  String toSquare;
   bool isCastling;
   bool isEnPassant;
 
@@ -14,7 +15,8 @@ class Move {
     required this.column,
     required this.newRow,
     required this.newColumn,
-    required this.newSquare,
+    required this.fromSquare,
+    required this.toSquare,
     this.isCastling = false,
     this.isEnPassant = false,
   });
@@ -33,10 +35,12 @@ class Move {
     int x2 = int.parse(uci[3]) - 1;
     int y2 = uci.codeUnitAt(2) - 'a'.codeUnitAt(0);
     return Move(
-        row: x1,
-        column: y1,
-        newRow: x2,
-        newColumn: y2,
-        newSquare: newSquareString(x2, y2));
+      row: x1,
+      column: y1,
+      newRow: x2,
+      newColumn: y2,
+      fromSquare: squareName(x1, y1),
+      toSquare: squareName(x2, y2),
+    );
   }
 }

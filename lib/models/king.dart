@@ -1,4 +1,4 @@
-import '../engine.dart';
+import '../precomputed_mode_data.dart';
 import '../square_checker.dart';
 import '../utils/constants.dart';
 import '../utils/enums.dart';
@@ -13,116 +13,89 @@ class King extends Piece {
   Set<Move> generateMoves(List<List<Piece?>> board) {
     Set<Move> moves = {};
 
-    // Generate moves in all eight directions
-    for (int row = x - 1; row <= x + 1; row++) {
-      for (int col = y - 1; col <= y + 1; col++) {
-        // Skip the king's current square
-        if (row == x && col == y) continue;
+    // Check if the king is currently in check.
+    bool inCheck = isSquareAttacked(board, x, y);
 
-        // Check if the destination square is within the board bounds
-        if (row < 0 || row >= 8 || col < 0 || col >= 8) continue;
+    // Get the precomputed king moves for this square.
+    List<int> kingMoves = PrecomputedMoveData.kingMoves[x * 8 + y];
 
-        if (!isSquareAttacked(board, row, col)) {
-          // Check if the destination square is empty or contains an enemy piece
-          Piece? piece = board[row][col];
-          if (piece == null || piece.color != color) {
-            moves.add(Move(
-                row: x,
-                column: y,
-                newRow: row,
-                newColumn: col,
-                newSquare: newSquareString(row, col)));
-          }
+    for (int move in kingMoves) {
+      int newX = move ~/ 8;
+      int newY = move % 8;
+
+      // Check if the destination square is within the board boundaries and is either empty or contains an opponent's piece.
+      if (newX >= 0 && newX < 8 && newY >= 0 && newY < 8 && (board[newX][newY] == null || board[newX][newY]!.color != color)) {
+        // Check if making the move would put the king in check.
+        if (!isSquareAttacked(board, newX, newY)) {
+          moves.add(Move(
+            row: x,
+            column: y,
+            newRow: newX,
+            newColumn: newY,
+            fromSquare: squareName(x, y),
+            toSquare: squareName(newX, newY),
+          ));
+        } else if (!inCheck) {
+          // If the king was not in check before, it is now in check.
+          inCheck = true;
         }
       }
     }
 
-    if (!hasMoved) {
-      if (color == white && board[0][4] is King) {
-        // Check for kingside castling
-        if (board[0][5] == null &&
-            board[0][6] == null &&
-            board[0][7] is Rook &&
-            !(board[0][7]?.hasMoved ?? true)) {
-          if (!isSquareAttacked(board, 0, 5) &&
-              !isSquareAttacked(board, 0, 6)) {
-            moves.add(Move(
-                row: 0,
-                column: 4,
-                newRow: 0,
-                newColumn: 6,
-                isCastling: true,
-                newSquare: newSquareString(0, 6)));
-          }
-        } else {
-          // Check for queenside castling
-          if (board[0][1] == null &&
-              board[0][2] == null &&
-              board[0][3] == null &&
-              board[0][0] is Rook &&
-              !(board[0][0]?.hasMoved ?? true)) {
-            if (!isSquareAttacked(board, 0, 1) &&
-                !isSquareAttacked(board, 0, 2) &&
-                !isSquareAttacked(board, 0, 3)) {
-              moves.add(Move(
-                  row: 0,
-                  column: 4,
-                  newRow: 0,
-                  newColumn: 2,
-                  isCastling: true,
-                  newSquare: newSquareString(0, 2)));
-            }
-          }
+    // Check if the king is allowed to castle.
+    if (!inCheck && !hasMoved && board[x][7] is Rook && board[x][7]!.hasMoved == false) {
+      // Check if the squares between the king and the rook are empty.
+      bool empty = true;
+      for (int i = y + 1; i < 7; i++) {
+        if (board[x][i] != null) {
+          empty = false;
+          break;
         }
-      } else if (color == black && board[7][4] is King) {
-        // Check for kingside castling
-        if (board[7][5] == null &&
-            board[7][6] == null &&
-            board[7][7] is Rook &&
-            !(board[7][7]?.hasMoved ?? true)) {
-          if (!isSquareAttacked(board, 7, 5) &&
-              !isSquareAttacked(board, 7, 6)) {
-            moves.add(Move(
-                row: 7,
-                column: 4,
-                newRow: 7,
-                newColumn: 6,
-                isCastling: true,
-                newSquare: newSquareString(7, 6)));
-          }
-        } else {
-          // Check for queenside castling
-          if (board[7][1] == null &&
-              board[7][2] == null &&
-              board[7][3] == null &&
-              board[7][0] is Rook &&
-              !(board[7][0]?.hasMoved ?? true)) {
-            if (!isSquareAttacked(board, 7, 1) &&
-                !isSquareAttacked(board, 7, 2) &&
-                !isSquareAttacked(board, 7, 3)) {
-              moves.add(Move(
-                  row: 7,
-                  column: 4,
-                  newRow: 7,
-                  newColumn: 2,
-                  isCastling: true,
-                  newSquare: newSquareString(7, 2)));
-            }
-          }
-        }
+      }
+
+      // Check if the king is not in check and the squares it would pass through are not attacked
+      if (empty && !isSquareAttacked(board, x, y) && !isSquareAttacked(board, x, y + 1) && !isSquareAttacked(board, x, y + 2)) {
+        moves.add(Move(
+          row: x,
+          column: y,
+          newRow: x,
+          newColumn: y + 2,
+          fromSquare: squareName(x, y),
+          toSquare: squareName(x, y + 2),
+          isCastling: true,
+        ));
       }
     }
 
+    // Check if the king is allowed to castle.
+    if (!inCheck && !hasMoved && board[x][0] is Rook && board[x][0]!.hasMoved == false) {
+      // Check if the squares between the king and the rook are empty.
+      bool empty = true;
+      for (int i = y - 1; i > 0; i--) {
+        if (board[x][i] != null) {
+          empty = false;
+          break;
+        }
+      }
+
+      // Check if the king is not in check and the squares it would pass through are not attacked
+      if (empty && !isSquareAttacked(board, x, y) && !isSquareAttacked(board, x, y - 1) && !isSquareAttacked(board, x, y - 2)) {
+        moves.add(Move(
+          row: x,
+          column: y,
+          newRow: x,
+          newColumn: y - 2,
+          fromSquare: squareName(x, y),
+          toSquare: squareName(x, y - 2),
+          isCastling: true,
+        ));
+      }
+    }
     return moves;
   }
 
   bool isSquareAttacked(List<List<Piece?>> board, int row, int col) {
-    King king = Engine().findKing(board, color);
-    Engine().removeKing(board, king);
-    var result = SquareChecker()
-        .isSquareAttacked(board, row, col, color == white ? black : white);
-    Engine().putKingBack(board, king);
-    return result;
+    return SquareChecker().isSquareAttacked(board, row, col, color == white ? black : white);
   }
 
   @override
@@ -140,7 +113,7 @@ class King extends Piece {
     Set<String> control = {};
     Set<Move> moves = generateMoves(board);
     for (Move move in moves) {
-      control.add(move.newSquare);
+      control.add(move.toSquare);
     }
     return control;
   }
