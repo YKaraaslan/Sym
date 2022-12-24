@@ -192,8 +192,8 @@ class MoveGenerator {
 
     for (Move move in moves.toList()) {
       // Make a copy of the board and try making the move.
-      List<List<Piece?>> newBoard = deepCopyBoard(board);
-      ChessBoard().makeMoveForBoard(newBoard, move);
+      List<List<Piece?>> newBoard = chessBoard.deepCopyBoard(board);
+      ChessBoard().makeMove(newBoard, move, isDeepCopy: true);
 
       // If the king is not in check on the new board, add the move to the list of legal moves.
       if (!Engine().isCheck(newBoard, activeColor)) {
@@ -202,9 +202,5 @@ class MoveGenerator {
     }
 
     return validMoves;
-  }
-
-  List<List<Piece?>> deepCopyBoard(List<List<Piece?>> board) {
-    return board.map((row) => row.map((cell) => cell?.copy()).toList()).toList();
   }
 }

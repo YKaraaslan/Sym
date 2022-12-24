@@ -45,7 +45,7 @@ class Node {
     if (untried.isNotEmpty) {
       int index = _random.nextInt(untried.length);
       Move move = untried.elementAt(index);
-      List<List<Piece?>> copy = MoveGenerator().deepCopyBoard(board);
+      List<List<Piece?>> copy = chessBoard.deepCopyBoard(board);
       copy[move.newRow][move.newColumn] = copy[move.row][move.column];
       copy[move.row][move.column] = null;
       Node child = Node(copy, MoveGenerator().generateMoves(copy, activeColor),
@@ -59,7 +59,7 @@ class Node {
   double simulate() {
     var localIteration = iteration;
     // Simulate a random playout of the game to completion
-    List<List<Piece?>> copy = MoveGenerator().deepCopyBoard(board);
+    List<List<Piece?>> copy = chessBoard.deepCopyBoard(board);
     while (true) {
       Set<Move> moves = MoveGenerator().generateMoves(copy, activeColor);
       if (moves.isEmpty) {

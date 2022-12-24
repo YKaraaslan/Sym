@@ -4,7 +4,7 @@ import 'move.dart';
 import 'piece.dart';
 
 class Bishop extends Piece {
-  Bishop(int x, int y, PieceColor color, int value) : super(x, y, color, value);
+  Bishop(int x, int y, PieceColor color, int value, bool hasMoved, bool enPassant) : super(x, y, color, value, hasMoved, enPassant);
 
   @override
   Set<Move> generateMoves(List<List<Piece?>> board) {
@@ -36,7 +36,7 @@ class Bishop extends Piece {
 
   @override
   Bishop copy() {
-    return Bishop(x, y, color, value);
+    return Bishop(x, y, color, value, hasMoved, this.enPassant);
   }
 
   @override

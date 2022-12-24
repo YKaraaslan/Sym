@@ -18,7 +18,7 @@ class Engine {
     // Simulate the game until it is over
     while (!MoveGenerator().isEndGame(board)) {
       // Make the move on the chess board
-      ChessBoard().makeMove(Move.fromUciString(MoveGenerator().generateMove(board)));
+      ChessBoard().makeMove(board, Move.fromUciString(MoveGenerator().generateMove(board)));
 
       // Check if the game is over (i.e., there is a winner or the game is a draw)
       if (MoveGenerator().isEndGame(board)) {
@@ -118,13 +118,16 @@ class Engine {
     // Check if any of the legal moves can get the king out of check
     for (Move move in moves) {
       // Make the move on a copy of the board
-      List<List<Piece?>> copy = MoveGenerator().deepCopyBoard(board);
-      ChessBoard().makeMoveForBoard(copy, move);
+      List<List<Piece?>> copy = chessBoard.deepCopyBoard(board);
+      ChessBoard().makeMove(copy, move);
 
       // If the king is no longer in check on the copy of the board, it is not checkmate
       if (!isCheck(copy, color)) {
+        ChessBoard().undoMove(copy, move);
         return false;
       }
+
+      
     }
 
     // If none of the legal moves can get the king out of check, it is checkmate
