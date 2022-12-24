@@ -45,8 +45,3 @@ int iteration = 100;
 
 int whiteMoves = 0;
 int blackMoves = 0;
-
-int enPassants = 0;
-int castles = 0;
-int promotions = 0;
-int captures = 0;

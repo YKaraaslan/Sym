@@ -185,20 +185,19 @@ class ChessBoard {
       }
     }
 
+    // Remove En Passant
+    for (var i = 3; i <= 4; i++) {
+      for (var piece in localBoard[i]) {
+        if (piece != null && piece is Pawn) {
+          piece.enPassant = false;
+        }
+      }
+    }
+
     // Check En passant
     if (activeColor == white && move.row == 1 && move.newRow == 3) {
-      for (var piece in localBoard[move.newRow]) {
-        if (piece != null) {
-          piece.enPassant = false;
-        }
-      }
       localBoard[move.newRow][move.newColumn]?.enPassant = true;
     } else if (activeColor == black && move.row == 6 && move.newRow == 4) {
-      for (var piece in localBoard[move.newRow]) {
-        if (piece != null) {
-          piece.enPassant = false;
-        }
-      }
       localBoard[move.newRow][move.newColumn]?.enPassant = true;
     }
 

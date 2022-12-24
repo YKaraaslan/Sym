@@ -11,7 +11,10 @@ int fullDepth = 4;
 
 void main() {
   // Initialize the chess board to the starting po`sition
-  chessBoard.loadPositionFromFen('8/2p5/3p4/KP5r/1R3p1k/8/4P1P1/8 w - - 0 1');
+  chessBoard.loadPositionFromFen('1r3rk1/R1q1ppbp/3pbnp1/8/1p2P3/2P1B1P1/3N1PBP/3QR1K1 b - - 0 19');
+  // chessBoard.makeMove(board, Move.fromUciString('a2a3'));
+  // chessBoard.makeMove(board, Move.fromUciString('f6e4'));
+  // chessBoard.makeMove(board, Move.fromUciString('f3f7'));
   chessBoard.printTheBoard(board);
 
   stopwatch.start();
@@ -21,7 +24,6 @@ void main() {
 
   print('\n');
   print('$res: ${(stopwatch.elapsedMilliseconds / 1000).toStringAsFixed(2)} sec.');
-  print('captures: $captures, enPassant: $enPassants, castles: $castles, promotions: $promotions');
   print('\n');
 
   stopwatch.stop();
@@ -52,16 +54,6 @@ int moveGenerationTest(List<List<Piece?>> board, PieceColor color, Map<List<List
     top = moveGenerationTest(newBoard, color == white ? black : white, transTable, depth - 1);
     chessBoard.undoMove(newBoard, moveHistory.removeLast());
     numberOfPositions += top;
-    if (move.capturedPiece != null) {
-      captures++;
-    }
-    if (move.isEnPassant) {
-      enPassants++;
-    } else if (move.isCastling) {
-      castles++;
-    } else if (move.promotion != null) {
-      promotions++;
-    }
     if (depth == fullDepth) {
       print('${move.toUciString()}:  $top');
     }
