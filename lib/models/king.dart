@@ -7,7 +7,7 @@ import 'piece.dart';
 import 'rook.dart';
 
 class King extends Piece {
-  King(int x, int y, PieceColor color, int value) : super(x, y, color, value);
+  King(int x, int y, PieceColor color, int value, bool hasMoved, bool enPassant) : super(x, y, color, value, hasMoved, enPassant);
 
   @override
   Set<Move> generateMoves(List<List<Piece?>> board) {
@@ -75,7 +75,7 @@ class King extends Piece {
 
   @override
   King copy() {
-    return King(x, y, color, value);
+    return King(x, y, color, value, hasMoved, this.enPassant);
   }
 
   @override

@@ -1,5 +1,7 @@
 import 'package:sym/utils/constants.dart';
 
+import 'piece.dart';
+
 class Move {
   int row;
   int column;
@@ -10,6 +12,7 @@ class Move {
   bool isCastling;
   bool isEnPassant;
   String? promotion;
+  Piece? capturedPiece;
 
   Move({
     required this.row,
@@ -21,6 +24,7 @@ class Move {
     this.isCastling = false,
     this.isEnPassant = false,
     this.promotion,
+    this.capturedPiece,
   });
 
   String toUciString() {
