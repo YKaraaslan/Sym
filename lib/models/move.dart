@@ -1,5 +1,4 @@
-import 'package:sym/utils/constants.dart';
-
+import '../utils/constants.dart';
 import 'piece.dart';
 
 class Move {

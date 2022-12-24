@@ -14,8 +14,7 @@ import 'utils/heatmaps.dart';
 
 class SquareEvaluation {
   List<List<int>> createHeatMap(PieceColor color) {
-    List<List<int>> heatMap =
-        List.generate(8, (_) => List.generate(8, (index) => 0));
+    List<List<int>> heatMap = List.generate(8, (_) => List.generate(8, (index) => 0));
 
     for (int i = 0; i < 8; i++) {
       for (int j = 0; j < 8; j++) {
@@ -96,32 +95,21 @@ class SquareEvaluation {
         Piece? piece = board[i][j];
         if (piece is Pawn && piece.color == activeColor) {
           // Check for isolated pawns
-          if (i > 0 &&
-              i < 7 &&
-              board[i - 1][j] is! Pawn &&
-              board[i + 1][j] is! Pawn) {
+          if (i > 0 && i < 7 && board[i - 1][j] is! Pawn && board[i + 1][j] is! Pawn) {
             evaluation -= 10;
           }
           // Check for doubled pawns
-          if (i > 0 &&
-              board[i - 1][j] is Pawn &&
-              board[i - 1][j]?.color == activeColor) {
+          if (i > 0 && board[i - 1][j] is Pawn && board[i - 1][j]?.color == activeColor) {
             evaluation -= 5;
           }
-          if (i < 7 &&
-              board[i + 1][j] is Pawn &&
-              board[i + 1][j]?.color == activeColor) {
+          if (i < 7 && board[i + 1][j] is Pawn && board[i + 1][j]?.color == activeColor) {
             evaluation -= 5;
           }
           // Check for pawn chains
-          if (i > 0 &&
-              board[i - 1][j] is Pawn &&
-              board[i - 1][j]?.color == activeColor) {
+          if (i > 0 && board[i - 1][j] is Pawn && board[i - 1][j]?.color == activeColor) {
             evaluation += 2;
           }
-          if (i < 7 &&
-              board[i + 1][j] is Pawn &&
-              board[i + 1][j]?.color == activeColor) {
+          if (i < 7 && board[i + 1][j] is Pawn && board[i + 1][j]?.color == activeColor) {
             evaluation += 2;
           }
         }

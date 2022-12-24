@@ -1,4 +1,3 @@
-import '../engine.dart';
 import '../square_checker.dart';
 import '../utils/constants.dart';
 import '../utils/enums.dart';
@@ -37,26 +36,40 @@ class King extends Piece {
         // Check for kingside castling
         if (castling['K']! && board[0][5] == null && board[0][6] == null && board[0][7] is Rook && !(board[0][7]?.hasMoved ?? true)) {
           if (!isSquareAttacked(board, 0, 4) && !isSquareAttacked(board, 0, 5) && !isSquareAttacked(board, 0, 6)) {
-            moves.add(Move(row: 0, column: 4, newRow: 0, newColumn: 6, isCastling: true, newSquare: newSquareString(0, 6), oldSquare: newSquareString(x, y)));
+            moves.add(Move(
+                row: 0, column: 4, newRow: 0, newColumn: 6, isCastling: true, newSquare: newSquareString(0, 6), oldSquare: newSquareString(x, y)));
           }
         }
         // Check for queenside castling
-        if (castling['Q']! && board[0][1] == null && board[0][2] == null && board[0][3] == null && board[0][0] is Rook && !(board[0][0]?.hasMoved ?? true)) {
+        if (castling['Q']! &&
+            board[0][1] == null &&
+            board[0][2] == null &&
+            board[0][3] == null &&
+            board[0][0] is Rook &&
+            !(board[0][0]?.hasMoved ?? true)) {
           if (!isSquareAttacked(board, 0, 4) && !isSquareAttacked(board, 0, 2) && !isSquareAttacked(board, 0, 3)) {
-            moves.add(Move(row: 0, column: 4, newRow: 0, newColumn: 2, isCastling: true, newSquare: newSquareString(0, 2), oldSquare: newSquareString(x, y)));
+            moves.add(Move(
+                row: 0, column: 4, newRow: 0, newColumn: 2, isCastling: true, newSquare: newSquareString(0, 2), oldSquare: newSquareString(x, y)));
           }
         }
       } else if (color == black && board[7][4] is King) {
         // Check for kingside castling
         if (castling['k']! && board[7][5] == null && board[7][6] == null && board[7][7] is Rook && !(board[7][7]?.hasMoved ?? true)) {
           if (!isSquareAttacked(board, 7, 4) && !isSquareAttacked(board, 7, 5) && !isSquareAttacked(board, 7, 6)) {
-            moves.add(Move(row: 7, column: 4, newRow: 7, newColumn: 6, isCastling: true, newSquare: newSquareString(7, 6), oldSquare: newSquareString(x, y)));
+            moves.add(Move(
+                row: 7, column: 4, newRow: 7, newColumn: 6, isCastling: true, newSquare: newSquareString(7, 6), oldSquare: newSquareString(x, y)));
           }
         }
         // Check for queenside castling
-        if (castling['q']! && board[7][1] == null && board[7][2] == null && board[7][3] == null && board[7][0] is Rook && !(board[7][0]?.hasMoved ?? true)) {
+        if (castling['q']! &&
+            board[7][1] == null &&
+            board[7][2] == null &&
+            board[7][3] == null &&
+            board[7][0] is Rook &&
+            !(board[7][0]?.hasMoved ?? true)) {
           if (!isSquareAttacked(board, 7, 4) && !isSquareAttacked(board, 7, 2) && !isSquareAttacked(board, 7, 3)) {
-            moves.add(Move(row: 7, column: 4, newRow: 7, newColumn: 2, isCastling: true, newSquare: newSquareString(7, 2), oldSquare: newSquareString(x, y)));
+            moves.add(Move(
+                row: 7, column: 4, newRow: 7, newColumn: 2, isCastling: true, newSquare: newSquareString(7, 2), oldSquare: newSquareString(x, y)));
           }
         }
       }
@@ -66,11 +79,7 @@ class King extends Piece {
   }
 
   bool isSquareAttacked(List<List<Piece?>> board, int row, int col) {
-    King king = Engine().findKing(board, color);
-    Engine().removeKing(board, king);
-    var result = SquareChecker().isSquareAttacked(board, row, col, color == white ? black : white);
-    Engine().putKingBack(board, king);
-    return result;
+    return SquareChecker().isSquareAttacked(board, row, col, color == white ? black : white);
   }
 
   @override

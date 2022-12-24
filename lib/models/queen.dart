@@ -24,11 +24,7 @@ class Queen extends Piece {
           if (target == null || target.color != color) {
             // Add a move to the list of moves
             moves.add(Move(
-                row: this.x,
-                column: this.y,
-                newRow: x,
-                newColumn: y,
-                newSquare: newSquareString(x, y), oldSquare: newSquareString(this.x, this.y)));
+                row: this.x, column: this.y, newRow: x, newColumn: y, newSquare: newSquareString(x, y), oldSquare: newSquareString(this.x, this.y)));
           }
 
           // Stop iterating if we encounter a piece

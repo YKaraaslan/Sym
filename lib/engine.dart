@@ -126,8 +126,6 @@ class Engine {
         ChessBoard().undoMove(copy, move);
         return false;
       }
-
-      
     }
 
     // If none of the legal moves can get the king out of check, it is checkmate

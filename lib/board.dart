@@ -123,7 +123,8 @@ class ChessBoard {
     }
 
     // Store the captured piece (if any) in the Move object
-    if (localBoard[move.newRow][move.newColumn] != null && localBoard[move.newRow][move.newColumn]!.color != localBoard[move.row][move.column]!.color) {
+    if (localBoard[move.newRow][move.newColumn] != null &&
+        localBoard[move.newRow][move.newColumn]!.color != localBoard[move.row][move.column]!.color) {
       move.capturedPiece = localBoard[move.newRow][move.newColumn];
     }
 

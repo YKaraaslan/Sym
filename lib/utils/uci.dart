@@ -1,9 +1,8 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:sym/models/move.dart';
-
 import '../board.dart';
+import '../models/move.dart';
 import 'constants.dart';
 
 class Uci {

@@ -28,8 +28,7 @@ class Node {
     Node? selected;
     double maxScore = double.negativeInfinity;
     for (Node child in children) {
-      double score = child.winScore / child.visits +
-          c * sqrt(2 * log(visits) / child.visits);
+      double score = child.winScore / child.visits + c * sqrt(2 * log(visits) / child.visits);
       if (score > maxScore) {
         selected = child;
         maxScore = score;
@@ -40,16 +39,14 @@ class Node {
 
   Node expand() {
     // Expand a random untried child node
-    Set<Move> untried = moves.difference(children
-        .toSet()); // moves.difference(children.map((child) => child.move));
+    Set<Move> untried = moves.difference(children.toSet()); // moves.difference(children.map((child) => child.move));
     if (untried.isNotEmpty) {
       int index = _random.nextInt(untried.length);
       Move move = untried.elementAt(index);
       List<List<Piece?>> copy = chessBoard.deepCopyBoard(board);
       copy[move.newRow][move.newColumn] = copy[move.row][move.column];
       copy[move.row][move.column] = null;
-      Node child = Node(copy, MoveGenerator().generateMoves(copy, activeColor),
-          move: move, parent: this);
+      Node child = Node(copy, MoveGenerator().generateMoves(copy, activeColor), move: move, parent: this);
       children.add(child);
       return child;
     }
