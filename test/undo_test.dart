@@ -5,8 +5,6 @@ import 'package:sym/utils/constants.dart';
 import 'package:sym/utils/enums.dart';
 import 'package:test/test.dart';
 
-int fullDepth = 1;
-
 void main() {
   int moveGenerationTest(PieceColor color, int depth) {
     if (depth == 0) {
@@ -18,6 +16,7 @@ void main() {
 
     for (Move move in moves) {
       chessBoard.makeMove(board, move);
+      print(move.toUciString());
       numberOfPositions += moveGenerationTest(color == white ? black : white, depth - 1);
       chessBoard.undoMove(board, moveHistory.removeLast());
     }
@@ -26,8 +25,11 @@ void main() {
   }
 
   test('undo', () {
+    int fullDepth = 1;
     ChessBoard chessBoard = ChessBoard();
-    chessBoard.loadPositionFromFen('8/8/8/8/8/8/8/R3K2R w KQ - 0 1');
+    chessBoard.loadPositionFromFen('8/5p2/8/8/8/8/8/4K2R w - - 0 1');
+    chessBoard.makeMove(board, Move.fromUciString('e1g1'));
+    chessBoard.makeMove(board, Move.fromUciString('f7f5'));
     moveGenerationTest(activeColor, fullDepth);
   });
 }

@@ -4,8 +4,7 @@ import '../models/piece.dart';
 import 'enums.dart';
 
 // Board
-List<List<Piece?>> board =
-    List.generate(8, (_) => List.generate(8, (index) => null));
+List<List<Piece?>> board = List.generate(8, (_) => List.generate(8, (index) => null));
 
 // Files in the board
 const List<String> files = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
@@ -22,8 +21,7 @@ const PieceColor white = PieceColor.white;
 const PieceColor black = PieceColor.black;
 
 // Starting Position FEN
-const startingPosition =
-    'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
+const startingPosition = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
 
 ChessBoard chessBoard = ChessBoard();
 PieceColor activeColor = white;
@@ -47,3 +45,8 @@ int iteration = 100;
 
 int whiteMoves = 0;
 int blackMoves = 0;
+
+int enPassants = 0;
+int castles = 0;
+int promotions = 0;
+int captures = 0;

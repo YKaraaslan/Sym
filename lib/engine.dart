@@ -119,12 +119,15 @@ class Engine {
     for (Move move in moves) {
       // Make the move on a copy of the board
       List<List<Piece?>> copy = chessBoard.deepCopyBoard(board);
-      ChessBoard().makeMove(copy, move, isDeepCopy: true);
+      ChessBoard().makeMove(copy, move);
 
       // If the king is no longer in check on the copy of the board, it is not checkmate
       if (!isCheck(copy, color)) {
+        ChessBoard().undoMove(copy, move);
         return false;
       }
+
+      
     }
 
     // If none of the legal moves can get the king out of check, it is checkmate

@@ -112,6 +112,8 @@ class ChessBoard {
       int oldRookCol = (move.newColumn > move.column) ? 7 : 0;
 
       // Set the position of the rook
+      localBoard[move.row][oldRookCol]!.x = move.newRow;
+      localBoard[move.row][oldRookCol]!.y = newRookCol;
       localBoard[move.row][newRookCol] = localBoard[move.row][oldRookCol];
       localBoard[move.row][oldRookCol] = null;
 
@@ -121,14 +123,14 @@ class ChessBoard {
     }
 
     // Store the captured piece (if any) in the Move object
-    if (localBoard[move.newRow][move.newColumn] != null && localBoard[move.newRow][move.newColumn]?.color != localBoard[move.row][move.column]?.color) {
+    if (localBoard[move.newRow][move.newColumn] != null && localBoard[move.newRow][move.newColumn]!.color != localBoard[move.row][move.column]!.color) {
       move.capturedPiece = localBoard[move.newRow][move.newColumn];
     }
 
     // Perform a regular move
-    localBoard[move.row][move.column]?.x = move.newRow;
-    localBoard[move.row][move.column]?.y = move.newColumn;
-    localBoard[move.row][move.column]?.hasMoved = true;
+    localBoard[move.row][move.column]!.x = move.newRow;
+    localBoard[move.row][move.column]!.y = move.newColumn;
+    localBoard[move.row][move.column]!.hasMoved = true;
     localBoard[move.newRow][move.newColumn] = localBoard[move.row][move.column];
     localBoard[move.row][move.column] = null;
 
@@ -137,7 +139,7 @@ class ChessBoard {
       localBoard[move.row][move.newColumn] = null;
     }
 
-    // Check if the moved piece is a pawn that has reached the end of the locallocalBoard
+    // Check if the moved piece is a pawn that has reached the end of the localBoard
     if (localBoard[move.newRow][move.newColumn] is Pawn && (move.newRow == 0 || move.newRow == 7)) {
       switch (move.promotion) {
         case 'r':
@@ -223,13 +225,13 @@ class ChessBoard {
   }
 
   void undoMove(List<List<Piece?>> localBoard, Move move) {
-    localBoard[move.newRow][move.newColumn]?.x = move.row;
-    localBoard[move.newRow][move.newColumn]?.y = move.newColumn;
     if (move.isCastling) {
       int newRookCol = (move.newColumn > move.column) ? move.newColumn - 1 : move.newColumn + 1;
       int oldRookCol = (move.newColumn > move.column) ? 7 : 0;
 
       // Set the position of the rook to its original square
+      localBoard[move.row][newRookCol]!.x = move.row;
+      localBoard[move.row][newRookCol]!.y = move.column;
       localBoard[move.row][oldRookCol] = localBoard[move.row][newRookCol];
       localBoard[move.row][newRookCol] = null;
 
@@ -239,22 +241,21 @@ class ChessBoard {
     }
 
     // Undo a regular move
-    localBoard[move.newRow][move.newColumn]?.x = move.row;
-    localBoard[move.newRow][move.newColumn]?.y = move.column;
-    localBoard[move.newRow][move.newColumn]?.hasMoved = false;
+    localBoard[move.newRow][move.newColumn]!.x = move.row;
+    localBoard[move.newRow][move.newColumn]!.y = move.column;
     localBoard[move.row][move.column] = localBoard[move.newRow][move.newColumn];
     localBoard[move.newRow][move.newColumn] = null;
 
     // Put the captured piece back on the localBoard (if any)
     if (move.capturedPiece != null) {
-      localBoard[move.newRow][move.newColumn] = move.capturedPiece;
+      localBoard[move.capturedPiece!.x][move.capturedPiece!.y] = move.capturedPiece;
     }
 
     // Undo en passant
     if (move.isEnPassant) {
-      localBoard[move.row][move.newColumn] = Pawn(
+      localBoard[move.row][move.column] = Pawn(
         move.row,
-        move.newColumn,
+        move.column,
         localBoard[move.row][move.column]!.color,
         100,
         localBoard[move.row][move.column]!.hasMoved,
