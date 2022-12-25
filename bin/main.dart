@@ -7,11 +7,11 @@ import 'package:sym/utils/constants.dart';
 import 'package:sym/utils/enums.dart';
 
 Stopwatch stopwatch = Stopwatch();
-int fullDepth = 1;
+int fullDepth = 5;
 
 void main() {
   // Initialize the chess board to the starting po`sition
-  chessBoard.loadPositionFromFen('r3k2r/Pppp1ppp/1b3nbN/nP6/BBP1P3/q4N2/Pp1P1KPP/R2Q1R2 w kq - 0 1');
+  chessBoard.loadPositionFromFen(startingPosition);
   chessBoard.printTheBoard(board);
   stopwatch.start();
 

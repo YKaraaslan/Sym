@@ -175,11 +175,13 @@ class MoveGenerator {
           // Generate a list of valid moves for the current piece
           Set<Move> validMoves = piece.generateMoves(board);
 
-          // Filter the list of moves to only include legal moves
-          validMoves = filterMoves(board, validMoves, color);
-
-          // Add the legal moves to the set of all moves
-          moves.addAll(validMoves);
+          // Only add the move if it doesn't put the king in check
+          for (var move in validMoves) {
+            // If the king is not in check on the new board, add the move to the list of legal moves.
+            if (!movePutsKingInCheck(board, move)) {
+              moves.add(move);
+            }
+          }
         }
       }
     }
@@ -187,20 +189,12 @@ class MoveGenerator {
     return moves;
   }
 
-  Set<Move> filterMoves(List<List<Piece?>> board, Set<Move> moves, PieceColor activeColor) {
-    Set<Move> validMoves = {};
+  bool movePutsKingInCheck(List<List<Piece?>> board, Move move) {
+    // Make the move on a copy of the board
+    var newBoard = chessBoard.deepCopyBoard(board);
+    chessBoard.makeMove(newBoard, move, isDeepCopy: true);
 
-    for (Move move in moves.toList()) {
-      // Make a copy of the board and try making the move.
-      List<List<Piece?>> newBoard = chessBoard.deepCopyBoard(board);
-      ChessBoard().makeMove(newBoard, move, isDeepCopy: true);
-
-      // If the king is not in check on the new board, add the move to the list of legal moves.
-      if (!Engine().isCheck(newBoard, activeColor)) {
-        validMoves.add(move);
-      }
-    }
-
-    return validMoves;
+    // Check if the king is in check on the new board
+    return Engine().isCheck(newBoard, activeColor);
   }
 }

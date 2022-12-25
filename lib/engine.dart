@@ -1,5 +1,7 @@
 import 'dart:io';
 
+import 'package:sym/square_checker.dart';
+
 import 'board.dart';
 import 'models/bishop.dart';
 import 'models/king.dart';
@@ -134,27 +136,11 @@ class Engine {
 
   bool isCheck(List<List<Piece?>> board, PieceColor kingColor) {
     // Find the square of the king of the given color.
-    String kingSquare = '';
     for (int i = 0; i < 8; i++) {
       for (int j = 0; j < 8; j++) {
         Piece? piece = board[i][j];
         if (piece != null && piece is King && piece.color == kingColor) {
-          kingSquare = newSquareString(i, j);
-          break;
-        }
-      }
-    }
-
-    // Iterate through the board and check if any of the opponent's pieces
-    // can attack the king.
-    for (int i = 0; i < 8; i++) {
-      for (int j = 0; j < 8; j++) {
-        Piece? piece = board[i][j];
-        if (piece != null && piece.color != kingColor) {
-          Set<String> control = piece.getControl(board);
-          if (control.contains(kingSquare)) {
-            return true;
-          }
+          return SquareChecker().isSquareAttacked(board, i, j, kingColor == white ? black : white);
         }
       }
     }
