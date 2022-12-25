@@ -1,7 +1,5 @@
 import 'dart:io';
 
-import 'package:sym/square_checker.dart';
-
 import 'board.dart';
 import 'models/bishop.dart';
 import 'models/king.dart';
@@ -12,6 +10,7 @@ import 'models/piece.dart';
 import 'models/queen.dart';
 import 'models/rook.dart';
 import 'move_generator.dart';
+import 'square_checker.dart';
 import 'utils/constants.dart';
 import 'utils/enums.dart';
 

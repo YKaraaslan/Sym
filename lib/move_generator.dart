@@ -1,6 +1,5 @@
 import 'dart:math';
 
-import 'board.dart';
 import 'engine.dart';
 import 'models/king.dart';
 import 'models/move.dart';
