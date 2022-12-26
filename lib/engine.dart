@@ -107,24 +107,23 @@ class Engine {
     return positionsSeen;
   }
 
-  bool isCheckmate(List<List<Piece?>> board, PieceColor color) {
+  bool isCheckmate(List<List<Piece?>> board, PieceColor kingColor) {
     // Check if the king is in check
-    if (!isCheck(board, color)) {
+    if (!isCheck(board, kingColor)) {
       return false;
     }
 
     // Generate a list of legal moves for the current player
-    Set<Move> moves = MoveGenerator().generateMoves(board, color);
+    Set<Move> moves = MoveGenerator().generateMoves(board, kingColor);
 
     // Check if any of the legal moves can get the king out of check
     for (Move move in moves) {
       // Make the move on a copy of the board
       List<List<Piece?>> copy = chessBoard.deepCopyBoard(board);
-      ChessBoard().makeMove(copy, move);
+      chessBoard.makeMove(copy, move, isDeepCopy: true);
 
       // If the king is no longer in check on the copy of the board, it is not checkmate
-      if (!isCheck(copy, color)) {
-        ChessBoard().undoMove(copy, move);
+      if (!isCheck(copy, kingColor)) {
         return false;
       }
     }
@@ -160,27 +159,5 @@ class Engine {
       }
     }
     return king;
-  }
-
-  // Remove the king from the board
-  void removeKing(List<List<Piece?>> board, King king) {
-    board[king.x][king.y] = null;
-  }
-
-  // Put the king back on the board
-  void putKingBack(List<List<Piece?>> board, King king) {
-    var isFound = false;
-    for (int i = 0; i < 8; i++) {
-      for (int j = 0; j < 8; j++) {
-        Piece? piece = board[i][j];
-        if (piece != null && piece is King && piece.color == king.color) {
-          isFound = true;
-          break;
-        }
-      }
-    }
-    if (!isFound) {
-      board[king.x][king.y] = king;
-    }
   }
 }

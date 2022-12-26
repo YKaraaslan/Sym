@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:sym/models/move.dart';
 import 'package:sym/models/piece.dart';
 import 'package:sym/move_generator.dart';
+import 'package:sym/position.dart';
 import 'package:sym/utils/constants.dart';
 import 'package:sym/utils/enums.dart';
 
@@ -11,18 +12,18 @@ int fullDepth = 5;
 
 void main() {
   // Initialize the chess board to the starting po`sition
-  chessBoard.loadPositionFromFen(startingPosition);
+  chessBoard.loadPositionFromFen('r1bqkbnr/pppp1ppp/8/3Pp3/3nP3/8/PPP2PPP/RNBQKBNR w KQkq - 1 4');
+  print(Position().evaluatePosition(board));
+
   chessBoard.printTheBoard(board);
-  stopwatch.start();
+  stdout.write('bestmove: ');
 
-  print('\n');
-  var res = moveGenerationTest(board, activeColor, {}, fullDepth);
-
-  print('\n');
-  print('$res: ${(stopwatch.elapsedMilliseconds / 1000).toStringAsFixed(2)} sec.');
-  print('\n');
-
-  stopwatch.stop();
+  // Generate and make a move, and send it to the GUI
+  String move = MoveGenerator().generateMove(board);
+  chessBoard.makeMove(board, Move.fromUciString(move));
+  chessBoard.printTheBoard(board);
+  stdout.write('bestmove: $move\n');
+  print(Position().evaluatePosition(board));
 
   // Set up the input and output streams
   // stdin.transform(utf8.decoder).transform(LineSplitter()).listen(handleInput);
@@ -86,7 +87,7 @@ void handleInput(String input) {
       if (tokens[1] == 'startpos') {
         chessBoard.loadPositionFromFen(startingPosition);
       } else if (tokens[1] == 'fen') {
-        String fen = tokens.sublist(2, tokens.length - 1).join(' ');
+        String fen = tokens.sublist(2, tokens.length).join(' ');
         chessBoard.loadPositionFromFen(fen);
       }
       if (tokens[tokens.length - 2] == 'moves') {
@@ -102,15 +103,16 @@ void handleInput(String input) {
       String move = MoveGenerator().generateMove(board);
       chessBoard.makeMove(board, Move.fromUciString(move));
       stdout.write('bestmove $move\n');
-      print('\n' * 10);
-      for (var i = board.length - 1; i >= 0; i--) {
-        var symbol = '';
-        for (var element in board[i]) {
-          symbol += '${element?.getSymbol() ?? '.'} ';
-        }
-        print(symbol);
-      }
-      print('\n' * 5);
+      chessBoard.printTheBoard(board);
+      break;
+    case 'move':
+      chessBoard.makeMove(board, Move.fromUciString(tokens[1]));
+      chessBoard.printTheBoard(board);
+      stdout.write('bestmove: ');
+      String move = MoveGenerator().generateMove(board);
+      chessBoard.makeMove(board, Move.fromUciString(move));
+      chessBoard.printTheBoard(board);
+      stdout.write('bestmove: $move\n');
       break;
     case 'stop':
       // Interrupt the search when receiving the "stop" command

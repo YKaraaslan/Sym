@@ -1,5 +1,7 @@
 import 'dart:math';
 
+import 'package:sym/position.dart';
+
 import 'engine.dart';
 import 'models/king.dart';
 import 'models/move.dart';
@@ -20,7 +22,7 @@ class MoveGenerator {
     // Generate a list of legal moves for the active color
     Set<Move> moves = generateMoves(board, activeColor);
 
-    var heatMap = SquareEvaluation().createHeatMap(activeColor);
+    var heatMap = SquareEvaluation().createHeatMap(board, activeColor);
     var moveList = moves.toList();
     moveList.sort((a, b) => heatMap[b.newRow][b.newColumn] - heatMap[a.newRow][a.newColumn]);
     moves = moveList.toSet();
@@ -30,58 +32,75 @@ class MoveGenerator {
   }
 
   Move chooseMove(List<List<Piece?>> board, Set<Move> moves) {
-    // Create a root node for the MCTS tree
-    Node root = Node(board, moves);
+    // Set up the initial values for alpha and beta
+    double alpha = double.negativeInfinity;
+    double beta = double.infinity;
 
-    mcts(root);
+    // Set up the initial best move to the first move in the list
+    Move bestMove = moves.first;
 
-    // Use minimax with alpha-beta pruning to evaluate the strength of each move
-    Move? bestMove;
-    double maxScore = double.negativeInfinity;
-    for (Node child in root.children) {
-      double score = minimax(child, depth: iteration, alpha: double.negativeInfinity, beta: double.infinity, maximizingPlayer: false);
-      if (score > maxScore) {
-        bestMove = child.move;
-        maxScore = score;
+    // Set up the maximizing player flag
+    bool maximizingPlayer = activeColor == white;
+
+    // Iterate through the moves and select the best one using minimax
+    for (Move move in moves) {
+      // Make the move on a copy of the board
+      List<List<Piece?>> newBoard = chessBoard.deepCopyBoard(board);
+      chessBoard.makeMove(newBoard, move, isDeepCopy: true);
+      // Evaluate the move using minimax
+      double value = minimax(newBoard, alpha: alpha, beta: beta, maximizingPlayer: !maximizingPlayer);
+      // Update the best move and alpha/beta values if necessary
+      if (maximizingPlayer && value > alpha) {
+        alpha = value;
+        bestMove = move;
+      } else if (!maximizingPlayer && value < beta) {
+        beta = value;
+        bestMove = move;
       }
     }
-
-    // If no move was found, choose a random move
-    return bestMove ?? moves.elementAt(Random().nextInt(moves.length));
+    // Return the best move
+    return bestMove;
   }
 
   void mcts(Node root) {
-    for (int i = 0; i < iteration; i++) {
-      // Selection
-      Node current = root;
-      while (!current.isLeaf()) {
-        current = current.select();
-      }
-
-      // Expansion
-      if (!current.isFullyExpanded()) {
-        current = current.expand();
-      }
-
-      // Simulation
-      double result = current.simulate();
-
-      // Backpropagation
-      current.backpropagate(result);
+    // Run MCTS for a fixed number of iterations
+    for (int i = 0; i < 1000; i++) {
+      // Select a node in the tree using UCB1
+      Node node = root.select();
+      // Expand the selected node by adding its children to the tree
+      node.expand();
+      // Simulate the game from the selected node
+      double result = node.simulate();
+      // Backpropagate the result of the simulation to the selected node and all of its ancestors
+      node.backpropagate(result);
     }
   }
 
-  double minimax(Node node, {int depth = 4, double alpha = double.negativeInfinity, double beta = double.infinity, bool maximizingPlayer = true}) {
+  double minimax(List<List<Piece?>> board, {int depth = 3, double alpha = double.negativeInfinity, double beta = double.infinity, required bool maximizingPlayer}) {
     // Check if the node is a leaf or the depth limit has been reached
-    if (node.isLeaf() || depth == 0) {
-      return node.evaluate();
+    if (depth == 0 || isEndGame(board)) {
+      var a = Position().evaluatePosition(board);
+      return a;
     }
+
+    // Generate a list of legal moves for the current player
+    Set<Move> moves = generateMoves(board, activeColor);
 
     if (maximizingPlayer) {
       // Maximizing player: find the maximum score
       double value = double.negativeInfinity;
-      for (Node child in node.children) {
-        value = max(value, minimax(child, depth: depth - 1, alpha: alpha, beta: beta, maximizingPlayer: false));
+      for (Move move in moves) {
+        // Make the move on a copy of the board
+        List<List<Piece?>> newBoard = chessBoard.deepCopyBoard(board);
+        chessBoard.makeMove(newBoard, move, isDeepCopy: true);
+        // Evaluate the position after making the move
+        double score = Position().evaluatePosition(newBoard);
+        // Check if the move leads to checkmate
+        if (score == double.infinity) {
+          return score;
+        }
+        // Recursively evaluate the move using minimax
+        value = max(value, minimax(newBoard, depth: depth - 1, alpha: alpha, beta: beta, maximizingPlayer: false));
         alpha = max(alpha, value);
         if (beta <= alpha) {
           // Prune the remaining branches
@@ -92,8 +111,18 @@ class MoveGenerator {
     } else {
       // Minimizing player: find the minimum score
       double value = double.infinity;
-      for (Node child in node.children) {
-        value = min(value, minimax(child, depth: depth - 1, alpha: alpha, beta: beta, maximizingPlayer: true));
+      for (Move move in moves) {
+        // Make the move on a copy of the board
+        List<List<Piece?>> newBoard = chessBoard.deepCopyBoard(board);
+        chessBoard.makeMove(newBoard, move, isDeepCopy: true);
+        // Evaluate the position after making the move
+        double score = Position().evaluatePosition(newBoard);
+        // Check if the move leads to checkmate
+        if (score == double.negativeInfinity) {
+          return score;
+        }
+        // Recursively evaluate the move using minimax
+        value = min(value, minimax(newBoard, depth: depth - 1, alpha: alpha, beta: beta, maximizingPlayer: true));
         beta = min(beta, value);
         if (beta <= alpha) {
           // Prune the remaining branches

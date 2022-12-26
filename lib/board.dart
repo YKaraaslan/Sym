@@ -58,7 +58,7 @@ class ChessBoard {
     PieceColor color = symbol.isUpperCase() ? white : black;
     var hasMoved = !initialPosition(symbol.toLowerCase(), color, x, y);
     var pieceTypeFromSymbol = {
-      'k': King(x, y, color, maxValue, hasMoved, false),
+      'k': King(x, y, color, 1000000, hasMoved, false),
       'q': Queen(x, y, color, 900, hasMoved, false),
       'r': Rook(x, y, color, 500, hasMoved, false),
       'b': Bishop(x, y, color, 330, hasMoved, false),

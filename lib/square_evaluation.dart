@@ -13,38 +13,38 @@ import 'utils/enums.dart';
 import 'utils/heatmaps.dart';
 
 class SquareEvaluation {
-  List<List<int>> createHeatMap(PieceColor color) {
+  List<List<int>> createHeatMap(List<List<Piece?>> localBoard, PieceColor color) {
     List<List<int>> heatMap = List.generate(8, (_) => List.generate(8, (index) => 0));
 
     for (int i = 0; i < 8; i++) {
       for (int j = 0; j < 8; j++) {
-        heatMap[i][j] = _evaluateSquare(i, j);
+        heatMap[i][j] = _evaluateSquare(localBoard, i, j);
       }
     }
 
     return heatMap;
   }
 
-  int _evaluateSquare(int i, int j) {
+  int _evaluateSquare(List<List<Piece?>> localBoard, int i, int j) {
     int evaluation = 0;
 
     // Material balance heuristic
-    Piece? piece = board[i][j];
+    Piece? piece = localBoard[i][j];
     if (piece != null) {
       evaluation += piece.value;
 
       // Piece mobility heuristic
-      Set<Move> moves = MoveGenerator().generateMoves(board, piece.color);
+      Set<Move> moves = MoveGenerator().generateMoves(localBoard, piece.color);
       evaluation += moves.length;
 
       // King safety heuristic
-      King king = Engine().findKing(board, piece.color);
+      King king = Engine().findKing(localBoard, piece.color);
       int distance = (i - king.x).abs() + (j - king.y).abs();
       evaluation -= distance;
     }
 
     // Pawn structure heuristic
-    evaluation += _evaluatePawnStructure();
+    evaluation += _evaluatePawnStructure(localBoard);
 
     // Tempo heuristic
     evaluation += _evaluateTempo();
@@ -87,29 +87,29 @@ class SquareEvaluation {
     return evaluation;
   }
 
-  int _evaluatePawnStructure() {
+  int _evaluatePawnStructure(List<List<Piece?>> localBoard) {
     int evaluation = 0;
 
     for (int i = 0; i < 8; i++) {
       for (int j = 0; j < 8; j++) {
-        Piece? piece = board[i][j];
+        Piece? piece = localBoard[i][j];
         if (piece is Pawn && piece.color == activeColor) {
           // Check for isolated pawns
-          if (i > 0 && i < 7 && board[i - 1][j] is! Pawn && board[i + 1][j] is! Pawn) {
+          if (i > 0 && i < 7 && localBoard[i - 1][j] is! Pawn && localBoard[i + 1][j] is! Pawn) {
             evaluation -= 10;
           }
           // Check for doubled pawns
-          if (i > 0 && board[i - 1][j] is Pawn && board[i - 1][j]?.color == activeColor) {
+          if (i > 0 && localBoard[i - 1][j] is Pawn && localBoard[i - 1][j]?.color == activeColor) {
             evaluation -= 5;
           }
-          if (i < 7 && board[i + 1][j] is Pawn && board[i + 1][j]?.color == activeColor) {
+          if (i < 7 && localBoard[i + 1][j] is Pawn && localBoard[i + 1][j]?.color == activeColor) {
             evaluation -= 5;
           }
           // Check for pawn chains
-          if (i > 0 && board[i - 1][j] is Pawn && board[i - 1][j]?.color == activeColor) {
+          if (i > 0 && localBoard[i - 1][j] is Pawn && localBoard[i - 1][j]?.color == activeColor) {
             evaluation += 2;
           }
-          if (i < 7 && board[i + 1][j] is Pawn && board[i + 1][j]?.color == activeColor) {
+          if (i < 7 && localBoard[i + 1][j] is Pawn && localBoard[i + 1][j]?.color == activeColor) {
             evaluation += 2;
           }
         }

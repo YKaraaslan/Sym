@@ -44,8 +44,7 @@ class Node {
       int index = _random.nextInt(untried.length);
       Move move = untried.elementAt(index);
       List<List<Piece?>> copy = chessBoard.deepCopyBoard(board);
-      copy[move.newRow][move.newColumn] = copy[move.row][move.column];
-      copy[move.row][move.column] = null;
+      chessBoard.makeMove(copy, move, isDeepCopy: true);
       Node child = Node(copy, MoveGenerator().generateMoves(copy, activeColor), move: move, parent: this);
       children.add(child);
       return child;
@@ -65,8 +64,7 @@ class Node {
       }
       int index = _random.nextInt(moves.length);
       Move move = moves.elementAt(index);
-      copy[move.newRow][move.newColumn] = copy[move.row][move.column];
-      copy[move.row][move.column] = null;
+      chessBoard.makeMove(copy, move, isDeepCopy: true);
       localIteration--;
       if (localIteration <= 0) {
         return Position().evaluatePosition(copy).toDouble();
@@ -75,17 +73,7 @@ class Node {
   }
 
   double evaluate() {
-    // Compute the score based on the material balance and position of the pieces
-    double score = 0;
-    for (int i = 0; i < 8; i++) {
-      for (int j = 0; j < 8; j++) {
-        Piece? piece = board[i][j];
-        if (piece != null) {
-          score += piece.color == white ? piece.value : -piece.value;
-        }
-      }
-    }
-    return score;
+    return Position().evaluatePosition(board).toDouble();
   }
 
   void backpropagate(double result) {

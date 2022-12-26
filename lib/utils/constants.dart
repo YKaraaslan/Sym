@@ -35,13 +35,10 @@ String enPassant = '-';
 int halfMoveClock = 0;
 int fullMoveClock = 0;
 
-int minValue = -2147483648;
-int maxValue = 2147483647;
-
 List<Move> moveHistory = [];
 
 String newSquareString(int x, int y) => files[y] + (x + 1).toString();
-int iteration = 100;
+int iteration = 300;
 
 int whiteMoves = 0;
 int blackMoves = 0;
