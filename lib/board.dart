@@ -13,8 +13,8 @@ import 'utils/extensions.dart';
 // Represents a chess board with pieces
 class ChessBoard {
   // A helper function to parse a FEN string and populate the chess board
-  void loadPositionFromFen(String fen) {
-    board = List.generate(8, (_) => List.generate(8, (index) => null));
+  List<List<Piece?>> loadPositionFromFen(String fen) {
+    List<List<Piece?>> board = List.generate(8, (_) => List.generate(8, (index) => null));
     // Split the FEN string into parts
     List<String> parts = fen.trim().split(' ');
     if (parts.length != 6) {
@@ -51,19 +51,19 @@ class ChessBoard {
     halfMoveClock = int.parse(halfMoveClockResult);
     fullMoveClock = int.parse(fullMoveNumberResult);
 
-    // printTheBoard();
+    return board;
   }
 
   Piece? getPiece(String symbol, int x, int y) {
     PieceColor color = symbol.isUpperCase() ? white : black;
     var hasMoved = !initialPosition(symbol.toLowerCase(), color, x, y);
     var pieceTypeFromSymbol = {
-      'k': King(x, y, color, 1000000, hasMoved, false),
-      'q': Queen(x, y, color, 900, hasMoved, false),
-      'r': Rook(x, y, color, 500, hasMoved, false),
-      'b': Bishop(x, y, color, 330, hasMoved, false),
-      'n': Knight(x, y, color, 320, hasMoved, false),
-      'p': Pawn(x, y, color, 100, hasMoved, false),
+      'k': King(x, y, color, 1000000, symbol, hasMoved, false),
+      'q': Queen(x, y, color, 900, symbol, hasMoved, false),
+      'r': Rook(x, y, color, 500, symbol, hasMoved, false),
+      'b': Bishop(x, y, color, 330, symbol, hasMoved, false),
+      'n': Knight(x, y, color, 320, symbol, hasMoved, false),
+      'p': Pawn(x, y, color, 100, symbol, hasMoved, false),
     };
     return pieceTypeFromSymbol[symbol.toLowerCase()];
   }
@@ -141,13 +141,14 @@ class ChessBoard {
 
     // Check if the moved piece is a pawn that has reached the end of the localBoard
     if (localBoard[move.newRow][move.newColumn] is Pawn && (move.newRow == 0 || move.newRow == 7)) {
-      switch (move.promotion) {
+      switch (move.promotion?.toLowerCase()) {
         case 'r':
           localBoard[move.newRow][move.newColumn] = Rook(
             move.newRow,
             move.newColumn,
             localBoard[move.newRow][move.newColumn]!.color,
             500,
+            move.promotion ?? '',
             localBoard[move.newRow][move.newColumn]!.hasMoved,
             localBoard[move.newRow][move.newColumn]!.enPassant,
           );
@@ -158,6 +159,7 @@ class ChessBoard {
             move.newColumn,
             localBoard[move.newRow][move.newColumn]!.color,
             330,
+            move.promotion ?? '',
             localBoard[move.newRow][move.newColumn]!.hasMoved,
             localBoard[move.newRow][move.newColumn]!.enPassant,
           );
@@ -168,6 +170,7 @@ class ChessBoard {
             move.newColumn,
             localBoard[move.newRow][move.newColumn]!.color,
             320,
+            move.promotion ?? '',
             localBoard[move.newRow][move.newColumn]!.hasMoved,
             localBoard[move.newRow][move.newColumn]!.enPassant,
           );
@@ -178,6 +181,7 @@ class ChessBoard {
             move.newColumn,
             localBoard[move.newRow][move.newColumn]!.color,
             900,
+            move.promotion ?? '',
             localBoard[move.newRow][move.newColumn]!.hasMoved,
             localBoard[move.newRow][move.newColumn]!.enPassant,
           );
@@ -223,7 +227,7 @@ class ChessBoard {
     }
   }
 
-  void undoMove(List<List<Piece?>> localBoard, Move move) {
+  void undoMove(List<List<Piece?>> localBoard, Move move, {bool isDeepCopy = false}) {
     if (move.isCastling) {
       int newRookCol = (move.newColumn > move.column) ? move.newColumn - 1 : move.newColumn + 1;
       int oldRookCol = (move.newColumn > move.column) ? 7 : 0;
@@ -257,6 +261,7 @@ class ChessBoard {
         move.column,
         localBoard[move.row][move.column]!.color,
         100,
+        localBoard[move.row][move.column]!.symbol,
         localBoard[move.row][move.column]!.hasMoved,
         localBoard[move.row][move.column]!.enPassant,
       );
@@ -269,26 +274,29 @@ class ChessBoard {
         move.column,
         localBoard[move.row][move.column]!.color,
         100,
+        localBoard[move.row][move.column]!.symbol,
         localBoard[move.row][move.column]!.hasMoved,
         localBoard[move.row][move.column]!.enPassant,
       );
     }
 
-    // Update the move numbers
-    if (activeColor == white) {
-      whiteMoves--;
-    } else {
-      blackMoves--;
-    }
+    if (!isDeepCopy) {
+      // Update the move numbers
+      if (activeColor == white) {
+        whiteMoves--;
+      } else {
+        blackMoves--;
+      }
 
-    // Update the clocks
-    halfMoveClock--;
-    if (activeColor == black) {
-      fullMoveClock--;
-    }
+      // Update the clocks
+      halfMoveClock--;
+      if (activeColor == black) {
+        fullMoveClock--;
+      }
 
-    // Update the active color and other internal state
-    activeColor = activeColor == white ? black : white;
+      // Update the active color and other internal state
+      activeColor = activeColor == white ? black : white;
+    }
   }
 
   List<List<Piece?>> deepCopyBoard(List<List<Piece?>> board) {
@@ -307,8 +315,7 @@ class ChessBoard {
     return copy;
   }
 
-  void printTheBoard(List<List<Piece?>>? localBoard) {
-    localBoard = localBoard ?? board;
+  void printTheBoard(List<List<Piece?>> localBoard) {
     print('\n' * 10);
     for (var i = localBoard.length - 1; i >= 0; i--) {
       var symbol = '';

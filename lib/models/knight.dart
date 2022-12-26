@@ -4,7 +4,7 @@ import 'move.dart';
 import 'piece.dart';
 
 class Knight extends Piece {
-  Knight(int x, int y, PieceColor color, int value, bool hasMoved, bool enPassant) : super(x, y, color, value, hasMoved, enPassant);
+  Knight(int x, int y, PieceColor color, int value, String symbol, bool hasMoved, bool enPassant) : super(x, y, color, value, symbol, hasMoved, enPassant);
 
   @override
   Set<Move> generateMoves(List<List<Piece?>> board) {
@@ -20,12 +20,14 @@ class Knight extends Piece {
             Piece? target = board[x][y];
             if (target == null || target.color != color) {
               moves.add(Move(
-                  row: this.x,
-                  column: this.y,
-                  newRow: x,
-                  newColumn: y,
-                  newSquare: newSquareString(x, y),
-                  oldSquare: newSquareString(this.x, this.y)));
+                row: this.x,
+                column: this.y,
+                newRow: x,
+                newColumn: y,
+                newSquare: newSquareString(x, y),
+                oldSquare: newSquareString(this.x, this.y),
+                pieceSymbol: symbol,
+              ));
             }
           }
         }
@@ -37,7 +39,7 @@ class Knight extends Piece {
 
   @override
   Knight copy() {
-    return Knight(x, y, color, value, hasMoved, this.enPassant);
+    return Knight(x, y, color, value, symbol, hasMoved, this.enPassant);
   }
 
   @override

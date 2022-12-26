@@ -15,29 +15,30 @@ import 'utils/constants.dart';
 import 'utils/enums.dart';
 
 class Engine {
-  void simulateChessGame() {
+  void simulateChessGame(List<List<Piece?>> board) {
     // Simulate the game until it is over
-    while (!MoveGenerator().isEndGame(board)) {
+    while (!isEndGame(board)) {
       // Make the move on the chess board
       ChessBoard().makeMove(board, Move.fromUciString(MoveGenerator().generateMove(board)));
-
-      // Check if the game is over (i.e., there is a winner or the game is a draw)
-      if (MoveGenerator().isEndGame(board)) {
-        break;
-      }
 
       // Switch the current player
       sleep(Duration(milliseconds: 250));
     }
+  }
 
+  bool isEndGame(List<List<Piece?>> board) {
     // Announce the winner or declare the game a draw
     if (isDraw(board)) {
       print('The game is a draw.');
+      return true;
     } else if (isCheckmate(board, white)) {
       print('Black wins.');
+      return true;
     } else if (isCheckmate(board, black)) {
       print('White wins.');
+      return true;
     }
+    return false;
   }
 
   bool isDraw(List<List<Piece?>> board) {
@@ -108,28 +109,14 @@ class Engine {
   }
 
   bool isCheckmate(List<List<Piece?>> board, PieceColor kingColor) {
-    // Check if the king is in check
-    if (!isCheck(board, kingColor)) {
-      return false;
-    }
-
-    // Generate a list of legal moves for the current player
-    Set<Move> moves = MoveGenerator().generateMoves(board, kingColor);
-
-    // Check if any of the legal moves can get the king out of check
-    for (Move move in moves) {
-      // Make the move on a copy of the board
-      List<List<Piece?>> copy = chessBoard.deepCopyBoard(board);
-      chessBoard.makeMove(copy, move, isDeepCopy: true);
-
-      // If the king is no longer in check on the copy of the board, it is not checkmate
-      if (!isCheck(copy, kingColor)) {
-        return false;
+    Piece king = findKing(board, kingColor);
+    if (Engine().isCheck(board, kingColor)) {
+      // Check if the king has any legal moves
+      if (MoveGenerator().generateMoves(board, kingColor).isEmpty) {
+        return true;
       }
     }
-
-    // If none of the legal moves can get the king out of check, it is checkmate
-    return true;
+    return false;
   }
 
   bool isCheck(List<List<Piece?>> board, PieceColor kingColor) {
@@ -148,7 +135,7 @@ class Engine {
 
   // Find the king of the given color on the board
   King findKing(List<List<Piece?>> board, PieceColor color) {
-    late King king;
+    King? king;
     for (int i = 0; i < 8; i++) {
       for (int j = 0; j < 8; j++) {
         Piece? piece = board[i][j];
@@ -158,6 +145,34 @@ class Engine {
         }
       }
     }
-    return king;
+    return king!;
+  }
+
+  bool isFork(List<List<Piece?>> board, Move move, Piece piece) {
+    // Make a copy of the board and apply the move
+    List<List<Piece?>> newBoard = ChessBoard().deepCopyBoard(board);
+    ChessBoard().makeMove(newBoard, move, isDeepCopy: true);
+
+    // Find the squares that are attackable by the moving piece
+    Set<String> attackableSquares = piece.getControl(newBoard);
+
+    // Check if there are two or more pieces of the opponent's color in the attackable squares
+    int count = 0;
+    for (int i = 0; i < 8; i++) {
+      for (int j = 0; j < 8; j++) {
+        if (newBoard[i][j] != null && newBoard[i][j]?.color != piece.color && attackableSquares.contains(newSquareString(i, j))) {
+          count++;
+        }
+      }
+    }
+
+    return count >= 2;
+  }
+
+  bool isDiscovery(List<List<Piece?>> board, Move move, PieceColor color) {
+    // Check if the move creates a new attack on the enemy king
+    List<List<Piece?>> newBoard = ChessBoard().deepCopyBoard(board);
+    ChessBoard().makeMove(newBoard, move, isDeepCopy: true);
+    return Engine().isCheck(newBoard, color == white ? black : white);
   }
 }

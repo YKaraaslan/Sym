@@ -8,6 +8,7 @@ class Move {
   int newColumn;
   String oldSquare;
   String newSquare;
+  String pieceSymbol;
   bool isCastling;
   bool isEnPassant;
   String? promotion;
@@ -20,6 +21,7 @@ class Move {
     required this.newColumn,
     required this.oldSquare,
     required this.newSquare,
+    required this.pieceSymbol,
     this.isCastling = false,
     this.isEnPassant = false,
     this.promotion,
@@ -50,7 +52,7 @@ class Move {
     return uciString;
   }
 
-  static Move fromUciString(String moveString) {
+  static Move fromUciString(String moveString, {String? pieceSymbol}) {
     int row = (moveString[1] == '1') ? 0 : 7;
     // Check if the move is a castle move
     if (moveString == 'e1g1' || moveString == 'e8g8') {
@@ -63,6 +65,7 @@ class Move {
         isCastling: true,
         oldSquare: '${files[4]}${row + 1}',
         newSquare: '${files[6]}${row + 1}',
+        pieceSymbol: pieceSymbol ?? '',
       );
     } else if (moveString == 'e1c1' || moveString == 'e8c8') {
       // Queenside castle
@@ -74,6 +77,7 @@ class Move {
         isCastling: true,
         oldSquare: '${files[4]}${row + 1}',
         newSquare: '${files[2]}${row + 1}',
+        pieceSymbol: pieceSymbol ?? '',
       );
     } else {
       // Parse the starting square
@@ -102,6 +106,7 @@ class Move {
         promotion: promotion,
         oldSquare: '${files[column]}${row + 1}',
         newSquare: '${files[newColumn]}${newRow + 1}',
+        pieceSymbol: pieceSymbol ?? '',
       );
     }
   }

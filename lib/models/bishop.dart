@@ -4,7 +4,7 @@ import 'move.dart';
 import 'piece.dart';
 
 class Bishop extends Piece {
-  Bishop(int x, int y, PieceColor color, int value, bool hasMoved, bool enPassant) : super(x, y, color, value, hasMoved, enPassant);
+  Bishop(int x, int y, PieceColor color, int value, String symbol, bool hasMoved, bool enPassant) : super(x, y, color, value, symbol, hasMoved, enPassant);
 
   @override
   Set<Move> generateMoves(List<List<Piece?>> board) {
@@ -19,10 +19,24 @@ class Bishop extends Piece {
           Piece? target = board[x][y];
           if (target == null) {
             moves.add(Move(
-                row: this.x, column: this.y, newRow: x, newColumn: y, newSquare: newSquareString(x, y), oldSquare: newSquareString(this.x, this.y)));
+              row: this.x,
+              column: this.y,
+              newRow: x,
+              newColumn: y,
+              newSquare: newSquareString(x, y),
+              oldSquare: newSquareString(this.x, this.y),
+              pieceSymbol: symbol,
+            ));
           } else if (target.color != color) {
             moves.add(Move(
-                row: this.x, column: this.y, newRow: x, newColumn: y, newSquare: newSquareString(x, y), oldSquare: newSquareString(this.x, this.y)));
+              row: this.x,
+              column: this.y,
+              newRow: x,
+              newColumn: y,
+              newSquare: newSquareString(x, y),
+              oldSquare: newSquareString(this.x, this.y),
+              pieceSymbol: symbol,
+            ));
             break;
           } else {
             break;
@@ -38,7 +52,7 @@ class Bishop extends Piece {
 
   @override
   Bishop copy() {
-    return Bishop(x, y, color, value, hasMoved, this.enPassant);
+    return Bishop(x, y, color, value, symbol, hasMoved, this.enPassant);
   }
 
   @override

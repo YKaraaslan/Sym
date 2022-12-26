@@ -1,5 +1,7 @@
+import 'dart:convert';
 import 'dart:io';
 
+import 'package:sym/board.dart';
 import 'package:sym/models/move.dart';
 import 'package:sym/models/piece.dart';
 import 'package:sym/move_generator.dart';
@@ -10,35 +12,35 @@ import 'package:sym/utils/enums.dart';
 Stopwatch stopwatch = Stopwatch();
 int fullDepth = 5;
 
+// Board
+List<List<Piece?>> _board = List.generate(8, (_) => List.generate(8, (index) => null));
+
 void main() {
   // Initialize the chess board to the starting po`sition
-  chessBoard.loadPositionFromFen('r1bqkbnr/pppp1ppp/8/3Pp3/3nP3/8/PPP2PPP/RNBQKBNR w KQkq - 1 4');
-  print(Position().evaluatePosition(board));
+  _board = ChessBoard().loadPositionFromFen('rnbqkbnr/pppp1ppp/8/4p3/8/4P3/PPPP1PPP/RNBQKBNR w KQkq - 0 2');
 
-  chessBoard.printTheBoard(board);
-  stdout.write('bestmove: ');
+  // print(moveGenerationTest(board, activeColor, 5));
+
+  // ChessBoard().printTheBoard(_board);
+  // stdout.write('bestmove: ');
 
   // Generate and make a move, and send it to the GUI
-  String move = MoveGenerator().generateMove(board);
-  chessBoard.makeMove(board, Move.fromUciString(move));
-  chessBoard.printTheBoard(board);
-  stdout.write('bestmove: $move\n');
-  print(Position().evaluatePosition(board));
+  // String move = MoveGenerator().generateMove(_board);
+  // ChessBoard().makeMove(_board, Move.fromUciString(move));
+  // ChessBoard().printTheBoard(_board);
+  // stdout.write('bestmove: $move\n');
+  // print(Position().evaluatePosition(_board, activeColor));
 
   // Set up the input and output streams
-  // stdin.transform(utf8.decoder).transform(LineSplitter()).listen(handleInput);
+  stdin.transform(utf8.decoder).transform(LineSplitter()).listen(handleInput);
 
   // Send the "uci" command to the GUI to initiate the UCI communication
-  // stdout.write('uci\n');
+  stdout.write('uci\n');
 }
 
-int moveGenerationTest(List<List<Piece?>> board, PieceColor color, Map<List<List<Piece?>>, int> transTable, int depth) {
+int moveGenerationTest(List<List<Piece?>> board, PieceColor color, int depth) {
   if (depth == 0) {
     return 1;
-  }
-
-  if (transTable.containsKey(board)) {
-    return transTable[board]!;
   }
 
   Set<Move> moves = MoveGenerator().generateMoves(board, color);
@@ -46,18 +48,15 @@ int moveGenerationTest(List<List<Piece?>> board, PieceColor color, Map<List<List
   var top = 0;
 
   for (Move move in moves) {
-    List<List<Piece?>> newBoard = chessBoard.deepCopyBoard(board);
-    chessBoard.makeMove(newBoard, move);
-    top = moveGenerationTest(newBoard, color == white ? black : white, transTable, depth - 1);
-    chessBoard.undoMove(newBoard, moveHistory.removeLast());
+    List<List<Piece?>> newBoard = ChessBoard().deepCopyBoard(board);
+    ChessBoard().makeMove(newBoard, move);
+    top = moveGenerationTest(newBoard, color == white ? black : white, depth - 1);
+    ChessBoard().undoMove(newBoard, moveHistory.removeLast());
     numberOfPositions += top;
     if (depth == fullDepth) {
       print('${move.toUciString()}:  $top');
     }
   }
-
-  // Store the result in the transposition table
-  transTable[board] = numberOfPositions;
 
   return numberOfPositions;
 }
@@ -80,39 +79,43 @@ void handleInput(String input) {
       break;
     case 'ucinewgame':
       // Reset the chess board and other internal state when starting a new game
-      chessBoard.loadPositionFromFen(startingPosition);
+      _board = ChessBoard().loadPositionFromFen(startingPosition);
       break;
     case 'position':
       // Set the position on the chess board according to the FEN string or moves list
       if (tokens[1] == 'startpos') {
-        chessBoard.loadPositionFromFen(startingPosition);
+        _board = List.generate(8, (_) => List.generate(8, (index) => null));
+        _board = ChessBoard().loadPositionFromFen(startingPosition);
       } else if (tokens[1] == 'fen') {
+        _board = List.generate(8, (_) => List.generate(8, (index) => null));
         String fen = tokens.sublist(2, tokens.length).join(' ');
-        chessBoard.loadPositionFromFen(fen);
+        _board = ChessBoard().loadPositionFromFen(fen);
       }
       if (tokens[tokens.length - 2] == 'moves') {
         for (int i = tokens.length - 1; i < tokens.length; i++) {
           String move = tokens[i];
           // Make the move on the chess board and update the internal state
-          chessBoard.makeMove(board, Move.fromUciString(move));
+          ChessBoard().makeMove(_board, Move.fromUciString(move));
         }
       }
       break;
     case 'go':
       // Generate and make a move, and send it to the GUI
-      String move = MoveGenerator().generateMove(board);
-      chessBoard.makeMove(board, Move.fromUciString(move));
+      String move = MoveGenerator().generateMove(_board);
+      ChessBoard().makeMove(_board, Move.fromUciString(move));
       stdout.write('bestmove $move\n');
-      chessBoard.printTheBoard(board);
+      ChessBoard().printTheBoard(_board);
+      print(pgnMoves);
       break;
     case 'move':
-      chessBoard.makeMove(board, Move.fromUciString(tokens[1]));
-      chessBoard.printTheBoard(board);
+      ChessBoard().makeMove(_board, Move.fromUciString(tokens[1]));
+      ChessBoard().printTheBoard(_board);
       stdout.write('bestmove: ');
-      String move = MoveGenerator().generateMove(board);
-      chessBoard.makeMove(board, Move.fromUciString(move));
-      chessBoard.printTheBoard(board);
+      String move = MoveGenerator().generateMove(_board);
+      ChessBoard().makeMove(_board, Move.fromUciString(move));
+      ChessBoard().printTheBoard(_board);
       stdout.write('bestmove: $move\n');
+      print(pgnMoves);
       break;
     case 'stop':
       // Interrupt the search when receiving the "stop" command

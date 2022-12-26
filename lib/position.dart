@@ -1,8 +1,14 @@
+import 'package:sym/utils/enums.dart';
+
 import 'engine.dart';
+import 'models/bishop.dart';
 import 'models/king.dart';
+import 'models/knight.dart';
 import 'models/move.dart';
 import 'models/pawn.dart';
 import 'models/piece.dart';
+import 'models/queen.dart';
+import 'models/rook.dart';
 import 'move_generator.dart';
 import 'utils/constants.dart';
 
@@ -37,7 +43,7 @@ class Position {
   double whitePieceActivity = 0;
   double blackPieceActivity = 0;
 
-  double evaluatePosition(List<List<Piece?>> board) {
+  double evaluatePosition(List<List<Piece?>> board, PieceColor color) {
     // Check if the current player is in checkmate
     if (Engine().isCheckmate(board, white)) {
       // Give a very high score to positions where the current player is in checkmate
@@ -51,6 +57,9 @@ class Position {
       for (int j = 0; j < 8; j++) {
         Piece? piece = board[i][j];
         if (piece != null) {
+          // Evaluate the position of the kings and major pieces
+          _positionEvaluation(board, piece);
+
           // Calculate the material value for each color
           _materialValue(piece);
 
@@ -58,19 +67,22 @@ class Position {
           _development(piece);
 
           // Calculate the king safety for each color and determine the square of the white king
-          _kingSafety(piece, i, j);
+          _kingSafety(board, piece, i, j);
 
           // Calculate piece coordination and piece activity
-          _pieceCoordination(piece);
+          _pieceCoordination(board, piece, color);
 
           // Calculate the pawn structure for each color
-          _pawnStructure(piece, i, j);
+          _pawnStructure(board, piece, i, j);
 
           // Calculate control of the center
           _centerControl(piece, i, j);
 
           // Calculate if the piece is in danger
-          _isPieceInDanger(piece, i, j);
+          _isPieceInDanger(board, piece, i, j);
+
+          // Calculate if the piece is in danger
+          _castling(board, piece);
         }
       }
     }
@@ -99,6 +111,138 @@ class Position {
     return evaluation;
   }
 
+  double _evaluateKingPosition(List<List<Piece?>> board, Piece king) {
+    // Initialize the evaluation score to 0
+    double score = 0;
+
+    // Evaluate the distance of the king from the center of the board
+    int distanceFromCenter = (4 - king.x).abs() + (4 - king.y).abs();
+    score -= distanceFromCenter;
+
+    // Evaluate the number of pieces attacking the king
+    int attackers = countAttackers(board, king.x, king.y, king.color == white ? black : white);
+    score -= attackers * 10;
+
+    // Return the evaluation score
+    return score;
+  }
+
+  double evaluateMajorPiecePosition(List<List<Piece?>> board, Piece piece) {
+    // Initialize the evaluation score to 0
+    double score = 0;
+
+    // Evaluate the distance of the piece from the center of the board
+    int distanceFromCenter = (4 - piece.x).abs() + (4 - piece.y).abs();
+    score -= distanceFromCenter;
+
+    // Evaluate the number of pieces attacking the piece
+    int attackers = countAttackers(board, piece.x, piece.y, piece.color == white ? black : white);
+    score += attackers * 5;
+
+    // Return the evaluation score
+    return score;
+  }
+
+  int countAttackers(List<List<Piece?>> board, int row, int column, PieceColor color) {
+    // Initialize the counter to 0
+    int attackers = 0;
+
+    // Check for pieces attacking the square from all directions
+    for (int i = -1; i <= 1; i++) {
+      for (int j = -1; j <= 1; j++) {
+        if (i == 0 && j == 0) {
+          continue;
+        }
+        int r = row + i;
+        int c = column + j;
+        if (r < 0 || r > 7 || c < 0 || c > 7) {
+          continue;
+        }
+        Piece? piece = board[r][c];
+        if (piece != null && piece.color != color && (piece is Queen || piece is Bishop || (piece is Pawn && piece.color == white ? r == row + 1 : r == row - 1))) {
+          attackers++;
+        }
+      }
+    }
+
+    // Check for rooks and queens attacking the square
+    for (int i = row + 1; i < 8; i++) {
+      Piece? piece = board[i][column];
+      if (piece == null) {
+        continue;
+      }
+      if (piece.color != color && (piece is Rook || piece is Queen)) {
+        attackers++;
+        break;
+      }
+      break;
+    }
+    for (int i = row - 1; i >= 0; i--) {
+      Piece? piece = board[i][column];
+      if (piece == null) {
+        continue;
+      }
+      if (piece.color != color && (piece is Rook || piece is Queen)) {
+        attackers++;
+        break;
+      }
+      break;
+    }
+    for (int j = column + 1; j < 8; j++) {
+      Piece? piece = board[row][j];
+      if (piece == null) {
+        continue;
+      }
+      if (piece.color != color && (piece is Rook || piece is Queen)) {
+        attackers++;
+        break;
+      }
+      break;
+    }
+    for (int j = column - 1; j >= 0; j--) {
+      Piece? piece = board[row][j];
+      if (piece == null) {
+        continue;
+      }
+      if (piece.color != color && (piece is Rook || piece is Queen)) {
+        attackers++;
+        break;
+      }
+      break;
+    }
+
+    // Check for knights attacking the square
+    for (int i = -2; i <= 2; i++) {
+      for (int j = -2; j <= 2; j++) {
+        if (i.abs() + j.abs() != 3) {
+          continue;
+        }
+        int r = row + i;
+        int c = column + j;
+        if (r < 0 || r > 7 || c < 0 || c > 7) {
+          continue;
+        }
+        Piece? piece = board[r][c];
+        if (piece != null && piece.color != color && piece is Knight) {
+          attackers++;
+        }
+      }
+    }
+
+    // Return the number of attackers
+    return attackers;
+  }
+
+  void _positionEvaluation(List<List<Piece?>> board, Piece piece) {
+    if (piece is King) {
+      // Evaluate the position of the kings
+      evaluation += _evaluateKingPosition(board, piece);
+    } else {
+      // Evaluate the position of the major pieces
+      evaluation += evaluateMajorPiecePosition(board, piece);
+    }
+  }
+
   void _materialValue(Piece piece) {
     if (piece.color == white) {
       whiteMaterialValue += piece.value;
@@ -118,7 +262,7 @@ class Position {
     }
   }
 
-  void _kingSafety(Piece piece, int i, int j) {
+  void _kingSafety(List<List<Piece?>> board, Piece piece, int i, int j) {
     if (piece is King && piece.color == white) {
       for (int k = -1; k <= 1; k++) {
         for (int l = -1; l <= 1; l++) {
@@ -148,10 +292,29 @@ class Position {
     }
   }
 
-  void _pieceCoordination(Piece piece) {
+  void _pieceCoordination(List<List<Piece?>> board, Piece piece, PieceColor color) {
     if (piece.color == white) {
       // Generate the moves for the piece
       Set<Move> moves = piece.generateMoves(board);
+
+      // Check for forks and discovery attacks
+      for (Move move in moves) {
+        if (Engine().isFork(board, move, piece)) {
+          if (color == white) {
+            evaluation += 1000; // Give a high score to positions with fork attacks
+          } else if (color == black) {
+            evaluation -= 1000; // Give a high score to positions with fork attacks
+          }
+        }
+        if (Engine().isDiscovery(board, move, color)) {
+          if (color == white) {
+            evaluation += 1000; // Give a high score to positions with discovery attacks
+          } else if (color == black) {
+            evaluation -= 1000; // Give a high score to positions with discovery attacks
+          }
+        }
+      }
+
       // Calculate piece activity
       whitePieceActivity += moves.length;
       // Count the number of attacks on enemy pieces
@@ -176,7 +339,7 @@ class Position {
     }
   }
 
-  void _pawnStructure(Piece piece, int i, int j) {
+  void _pawnStructure(List<List<Piece?>> board, Piece piece, int i, int j) {
     if (piece is Pawn) {
       // Check for pawn chains and isolated pawns
       bool hasFriendlyPawnOnLeft = j > 0 && board[i][j - 1] is Pawn && board[i][j - 1]!.color == piece.color;
@@ -208,7 +371,7 @@ class Position {
     }
   }
 
-  void _isPieceInDanger(Piece piece, int i, int j) {
+  void _isPieceInDanger(List<List<Piece?>> board, Piece piece, int i, int j) {
     // Calculate the number of attacking pieces
     int attackingPieces = 0;
     for (int k = -1; k <= 1; k++) {
@@ -251,6 +414,35 @@ class Position {
         evaluation -= 1;
       } else {
         evaluation += 1;
+      }
+    }
+  }
+
+  void _castling(List<List<Piece?>> board, Piece piece) {
+    // Check if the king is castled
+    if (piece.color == white) {
+      if (piece is King && piece.hasMoved == false) {
+        // Check if the rooks are in their initial positions
+        if (board[0][0] is Rook && board[0][0]!.hasMoved == false) {
+          // Add a bonus to the score if the king is castled on the queenside
+          evaluation += 20;
+        }
+        if (board[0][7] is Rook && board[0][7]!.hasMoved == false) {
+          // Add a bonus to the score if the king is castled on the kingside
+          evaluation += 20;
+        }
+      }
+    } else if (piece.color == black) {
+      if (piece is King && piece.hasMoved == false) {
+        // Check if the rooks are in their initial positions
+        if (board[7][0] is Rook && board[7][0]!.hasMoved == false) {
+          // Add a bonus to the score if the king is castled on the queenside
+          evaluation += 20;
+        }
+        if (board[7][7] is Rook && board[7][7]!.hasMoved == false) {
+          // Add a bonus to the score if the king is castled on the kingside
+          evaluation += 20;
+        }
       }
     }
   }

@@ -4,7 +4,7 @@ import 'move.dart';
 import 'piece.dart';
 
 class Rook extends Piece {
-  Rook(int x, int y, PieceColor color, int value, bool hasMoved, bool enPassant) : super(x, y, color, value, hasMoved, enPassant);
+  Rook(int x, int y, PieceColor color, int value, String symbol, bool hasMoved, bool enPassant) : super(x, y, color, value, symbol, hasMoved, enPassant);
 
   @override
   Set<Move> generateMoves(List<List<Piece?>> board) {
@@ -15,10 +15,26 @@ class Rook extends Piece {
       // Check if the destination square is empty or contains an enemy piece
       Piece? piece = board[row][y];
       if (piece == null) {
-        moves.add(Move(row: x, column: y, newRow: row, newColumn: y, newSquare: newSquareString(row, y), oldSquare: newSquareString(x, y)));
+        moves.add(Move(
+          row: x,
+          column: y,
+          newRow: row,
+          newColumn: y,
+          newSquare: newSquareString(row, y),
+          oldSquare: newSquareString(x, y),
+          pieceSymbol: symbol,
+        ));
       } else {
         if (piece.color != color) {
-          moves.add(Move(row: x, column: y, newRow: row, newColumn: y, newSquare: newSquareString(row, y), oldSquare: newSquareString(x, y)));
+          moves.add(Move(
+            row: x,
+            column: y,
+            newRow: row,
+            newColumn: y,
+            newSquare: newSquareString(row, y),
+            oldSquare: newSquareString(x, y),
+            pieceSymbol: symbol,
+          ));
         }
         break;
       }
@@ -29,10 +45,26 @@ class Rook extends Piece {
       // Check if the destination square is empty or contains an enemy piece
       Piece? piece = board[row][y];
       if (piece == null) {
-        moves.add(Move(row: x, column: y, newRow: row, newColumn: y, newSquare: newSquareString(row, y), oldSquare: newSquareString(x, y)));
+        moves.add(Move(
+          row: x,
+          column: y,
+          newRow: row,
+          newColumn: y,
+          newSquare: newSquareString(row, y),
+          oldSquare: newSquareString(x, y),
+          pieceSymbol: symbol,
+        ));
       } else {
         if (piece.color != color) {
-          moves.add(Move(row: x, column: y, newRow: row, newColumn: y, newSquare: newSquareString(row, y), oldSquare: newSquareString(x, y)));
+          moves.add(Move(
+            row: x,
+            column: y,
+            newRow: row,
+            newColumn: y,
+            newSquare: newSquareString(row, y),
+            oldSquare: newSquareString(x, y),
+            pieceSymbol: symbol,
+          ));
         }
         break;
       }
@@ -43,10 +75,26 @@ class Rook extends Piece {
       // Check if the destination square is empty or contains an enemy piece
       Piece? piece = board[x][c];
       if (piece == null) {
-        moves.add(Move(row: x, column: y, newRow: x, newColumn: c, newSquare: newSquareString(x, c), oldSquare: newSquareString(x, y)));
+        moves.add(Move(
+          row: x,
+          column: y,
+          newRow: x,
+          newColumn: c,
+          newSquare: newSquareString(x, c),
+          oldSquare: newSquareString(x, y),
+          pieceSymbol: symbol,
+        ));
       } else {
         if (piece.color != color) {
-          moves.add(Move(row: x, column: y, newRow: x, newColumn: c, newSquare: newSquareString(x, c), oldSquare: newSquareString(x, y)));
+          moves.add(Move(
+            row: x,
+            column: y,
+            newRow: x,
+            newColumn: c,
+            newSquare: newSquareString(x, c),
+            oldSquare: newSquareString(x, y),
+            pieceSymbol: symbol,
+          ));
         }
         break;
       }
@@ -55,10 +103,26 @@ class Rook extends Piece {
       // Check if the destination square is empty or contains an enemy piece
       Piece? piece = board[x][c];
       if (piece == null) {
-        moves.add(Move(row: x, column: y, newRow: x, newColumn: c, newSquare: newSquareString(x, c), oldSquare: newSquareString(x, y)));
+        moves.add(Move(
+          row: x,
+          column: y,
+          newRow: x,
+          newColumn: c,
+          newSquare: newSquareString(x, c),
+          oldSquare: newSquareString(x, y),
+          pieceSymbol: symbol,
+        ));
       } else {
         if (piece.color != color) {
-          moves.add(Move(row: x, column: y, newRow: x, newColumn: c, newSquare: newSquareString(x, c), oldSquare: newSquareString(x, y)));
+          moves.add(Move(
+            row: x,
+            column: y,
+            newRow: x,
+            newColumn: c,
+            newSquare: newSquareString(x, c),
+            oldSquare: newSquareString(x, y),
+            pieceSymbol: symbol,
+          ));
         }
         break;
       }
@@ -69,7 +133,7 @@ class Rook extends Piece {
 
   @override
   Rook copy() {
-    return Rook(x, y, color, value, hasMoved, this.enPassant);
+    return Rook(x, y, color, value, symbol, hasMoved, this.enPassant);
   }
 
   @override

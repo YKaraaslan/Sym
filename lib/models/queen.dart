@@ -4,7 +4,7 @@ import 'move.dart';
 import 'piece.dart';
 
 class Queen extends Piece {
-  Queen(int x, int y, PieceColor color, int value, bool hasMoved, bool enPassant) : super(x, y, color, value, hasMoved, enPassant);
+  Queen(int x, int y, PieceColor color, int value, String symbol, bool hasMoved, bool enPassant) : super(x, y, color, value, symbol, hasMoved, enPassant);
 
   @override
   Set<Move> generateMoves(List<List<Piece?>> board) {
@@ -24,7 +24,14 @@ class Queen extends Piece {
           if (target == null || target.color != color) {
             // Add a move to the list of moves
             moves.add(Move(
-                row: this.x, column: this.y, newRow: x, newColumn: y, newSquare: newSquareString(x, y), oldSquare: newSquareString(this.x, this.y)));
+              row: this.x,
+              column: this.y,
+              newRow: x,
+              newColumn: y,
+              newSquare: newSquareString(x, y),
+              oldSquare: newSquareString(this.x, this.y),
+              pieceSymbol: symbol,
+            ));
           }
 
           // Stop iterating if we encounter a piece
@@ -42,7 +49,7 @@ class Queen extends Piece {
 
   @override
   Queen copy() {
-    return Queen(x, y, color, value, hasMoved, this.enPassant);
+    return Queen(x, y, color, value, symbol, hasMoved, this.enPassant);
   }
 
   @override

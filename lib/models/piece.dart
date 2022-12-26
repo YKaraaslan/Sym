@@ -6,10 +6,11 @@ abstract class Piece {
   int y;
   PieceColor color;
   int value;
+  String symbol;
   bool hasMoved = false;
   bool enPassant = false;
 
-  Piece(this.x, this.y, this.color, this.value, this.hasMoved, this.enPassant);
+  Piece(this.x, this.y, this.color, this.value, this.symbol, this.hasMoved, this.enPassant);
 
   // Generate a list of valid moves for the piece
   Piece copy();
