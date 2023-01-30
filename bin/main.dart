@@ -5,7 +5,6 @@ import 'package:sym/board.dart';
 import 'package:sym/models/move.dart';
 import 'package:sym/models/piece.dart';
 import 'package:sym/move_generator.dart';
-import 'package:sym/position.dart';
 import 'package:sym/utils/constants.dart';
 import 'package:sym/utils/enums.dart';
 
@@ -13,11 +12,13 @@ Stopwatch stopwatch = Stopwatch();
 int fullDepth = 5;
 
 // Board
-List<List<Piece?>> _board = List.generate(8, (_) => List.generate(8, (index) => null));
+List<List<Piece?>> _board =
+    List.generate(8, (_) => List.generate(8, (index) => null));
 
 void main() {
   // Initialize the chess board to the starting po`sition
-  _board = ChessBoard().loadPositionFromFen('rnbqkbnr/pppp1ppp/8/4p3/8/4P3/PPPP1PPP/RNBQKBNR w KQkq - 0 2');
+  _board = ChessBoard().loadPositionFromFen(
+      'rnbqkbnr/pppp1ppp/8/4p3/8/4P3/PPPP1PPP/RNBQKBNR w KQkq - 0 2');
 
   // print(moveGenerationTest(board, activeColor, 5));
 
@@ -50,7 +51,8 @@ int moveGenerationTest(List<List<Piece?>> board, PieceColor color, int depth) {
   for (Move move in moves) {
     List<List<Piece?>> newBoard = ChessBoard().deepCopyBoard(board);
     ChessBoard().makeMove(newBoard, move);
-    top = moveGenerationTest(newBoard, color == white ? black : white, depth - 1);
+    top =
+        moveGenerationTest(newBoard, color == white ? black : white, depth - 1);
     ChessBoard().undoMove(newBoard, moveHistory.removeLast());
     numberOfPositions += top;
     if (depth == fullDepth) {

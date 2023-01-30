@@ -19,7 +19,8 @@ class Engine {
     // Simulate the game until it is over
     while (!isEndGame(board)) {
       // Make the move on the chess board
-      ChessBoard().makeMove(board, Move.fromUciString(MoveGenerator().generateMove(board)));
+      ChessBoard().makeMove(
+          board, Move.fromUciString(MoveGenerator().generateMove(board)));
 
       // Switch the current player
       sleep(Duration(milliseconds: 250));
@@ -54,7 +55,8 @@ class Engine {
     }
 
     // Check if there are no legal moves for either player
-    if (MoveGenerator().generateMoves(board, white).isEmpty && MoveGenerator().generateMoves(board, black).isEmpty) {
+    if (MoveGenerator().generateMoves(board, white).isEmpty &&
+        MoveGenerator().generateMoves(board, black).isEmpty) {
       return true;
     }
 
@@ -90,7 +92,10 @@ class Engine {
         }
       }
     }
-    if (!whiteHasPawn && !blackHasPawn && !whiteHasRookOrQueen && !blackHasRookOrQueen) {
+    if (!whiteHasPawn &&
+        !blackHasPawn &&
+        !whiteHasRookOrQueen &&
+        !blackHasRookOrQueen) {
       if (!whiteHasBishopOrKnight || !blackHasBishopOrKnight) {
         return true;
       }
@@ -109,7 +114,6 @@ class Engine {
   }
 
   bool isCheckmate(List<List<Piece?>> board, PieceColor kingColor) {
-    Piece king = findKing(board, kingColor);
     if (Engine().isCheck(board, kingColor)) {
       // Check if the king has any legal moves
       if (MoveGenerator().generateMoves(board, kingColor).isEmpty) {
@@ -125,7 +129,8 @@ class Engine {
       for (int j = 0; j < 8; j++) {
         Piece? piece = board[i][j];
         if (piece != null && piece is King && piece.color == kingColor) {
-          return SquareChecker().isSquareAttacked(board, i, j, kingColor == white ? black : white);
+          return SquareChecker().isSquareAttacked(
+              board, i, j, kingColor == white ? black : white);
         }
       }
     }
@@ -160,7 +165,9 @@ class Engine {
     int count = 0;
     for (int i = 0; i < 8; i++) {
       for (int j = 0; j < 8; j++) {
-        if (newBoard[i][j] != null && newBoard[i][j]?.color != piece.color && attackableSquares.contains(newSquareString(i, j))) {
+        if (newBoard[i][j] != null &&
+            newBoard[i][j]?.color != piece.color &&
+            attackableSquares.contains(newSquareString(i, j))) {
           count++;
         }
       }

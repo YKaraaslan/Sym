@@ -6,7 +6,7 @@ project_author_email: karaaslan.21@hotmail.com
 project_author_phone: '+905319823347'
 
 environment:
-  sdk: '>=2.18.6 <3.0.0'
+  sdk: '>=2.19.0 <3.0.0'
 
 # dependencies:
 #   path: ^1.8.0
